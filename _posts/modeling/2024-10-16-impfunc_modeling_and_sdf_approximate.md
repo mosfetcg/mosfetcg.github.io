@@ -58,4 +58,4 @@ float sdf( in vec2 p) {
 }
 ```
 
-<iframe src="https://editor.p5js.org/mosfet-archive/full/tUyIMA5xw" width="700" height="750"></iframe>
+<iframe src="https://editor.p5js.org/mosfet-archive/full/tUyIMA5xw" width="700" height="750" class="x la dspln dsplb-md"></iframe>
