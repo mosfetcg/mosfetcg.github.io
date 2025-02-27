@@ -1,0 +1,47 @@
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Function to add a toggle button near each iframe
+  function addToggleButton(iframe) {
+    // Create a container to hold the iframe and the button
+    const container = document.createElement('div');
+    container.style.position = 'relative';
+    container.style.display = 'inline-block'; // Ensure the container wraps tightly around its content
+
+    // Create a toggle button element
+    const toggleButton = document.createElement('button');
+    toggleButton.textContent = '收起';
+    toggleButton.style.position = 'absolute';
+    toggleButton.style.top = '0px';
+    toggleButton.style.left = '0px';
+    toggleButton.style.transform = 'translate(-100%, 0)'; // Place button to the left of the iframe
+    toggleButton.title = "iframe"
+    toggleButton.classList.add("x", "gr", "ws");
+
+    // Attach a click event handler to the toggle button
+    toggleButton.addEventListener('click', function() {
+      if (iframe.style.display === 'none') {
+        iframe.style.display = 'block';
+        toggleButton.textContent = '收起';
+      } else {
+        iframe.style.display = 'none';
+        toggleButton.textContent = '显示';
+      }
+    });
+
+    // Insert the iframe into the container
+    iframe.parentNode.insertBefore(container, iframe);
+    container.appendChild(iframe);
+
+    // Append the toggle button to the container
+    container.appendChild(toggleButton);
+  }
+
+  // Find all iframes on the page
+  const iframes = document.querySelectorAll('iframe');
+
+  // Add a toggle button to each iframe
+  iframes.forEach(function(iframe) {
+    addToggleButton(iframe);
+  });
+});
+</script>
