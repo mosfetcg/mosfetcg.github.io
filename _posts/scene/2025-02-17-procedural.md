@@ -163,3 +163,32 @@ return mix(bg, vec3(1.0), dense1);
   </div>
   <p>图2：近似结果</p>
 </div>
+
+## 环境光遮蔽
+说到环境光，第一个跳出的词可能是环境着色，通常它没有被计算为受到真正环境中弥漫的光线照明(全半球)，因此很容易误解它，如果计算正确，那么当然可以作为补充部分。通常应该进一步添加一些真正的环境光源，而不是单个颜色，例如天空，然后乘以遮挡。  
+
+遮蔽值描述了这样一种情况，对于特定表面光线可能在许多方向上被其他表面遮挡，遮挡越多，该地区就越闭塞，使得它们在环境光的照明下越少。  
+```cpp
+float ambient_occlusion( in vec3 p, in vec3 n, in float maxDistance, in float falloff) {
+  float ao = 0.0;
+  const int samples = 4;
+
+  for (int i = 0; i < samples; i++) {
+    float move_off = random(float(i)) * maxDistance;
+    vec3 direction = n * move_off;
+    ao += (move_off - max(scene(p + direction), 1.0)) / maxDistance * falloff;
+  }
+  return clamp(1.0 - ao / float(samples), 0.0, 1.0);
+}
+```
+
+## 便宜的雾
+实际上，雾比我们大多数人认为的更普遍。大多数情况下，空气中都有一定程度的阴霾。即使只有少量，我们也可以通过引入雾气来增强室外场景的现实主义。  
+除了使用参与介质，存在多种模拟雾的模型。即使是非常简单的方法也可以有效。  
+一种这样的方法是基于相机到目标的距离，直到插值到雾本身的颜色。下列是一种非常简单的雾算法。  
+```cpp
+vec3 fog2( in vec3 col, float d, float start, float end) {
+  float amount = clamp(((end - d) / (end - start)), 0.0, 1.0);
+  return mix(vec3(0.7, 0.8, 0.9), col, amount);
+}
+```

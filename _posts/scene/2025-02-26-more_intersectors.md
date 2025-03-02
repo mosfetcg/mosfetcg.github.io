@@ -131,3 +131,11 @@ vec3 rd = normalize(vec3(viep_hole - lens_origin));
 rd = camera_rotation * rd;
 return transport(lens_origin, rd);
 ```
+<div class="x gr txac">
+  <div class="x la flex mg0">
+    <div class="x la item6-lg item12 pd0 sk bg-raisin01">
+      <img src="/assets/i/8-7.png">
+    </div>
+  </div>
+  <p>图5：SDF中的电介质</p>
+</div>
