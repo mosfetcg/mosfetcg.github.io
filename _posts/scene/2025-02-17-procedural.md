@@ -192,3 +192,13 @@ vec3 fog2( in vec3 col, float d, float start, float end) {
   return mix(vec3(0.7, 0.8, 0.9), col, amount);
 }
 ```
+
+## 水下尖刻(caustics)
+水底地板上观察到弯曲的光带(bands of ligh)称为`水尖刻(water caustics)`，这是由波浪带传递到下表面的聚光。  
+模拟这种基本水下效应可以通过实际追踪射线得到，但是，在大多数情况下，不必完全准确，粗略的模拟也足以传达水下效应。找到与水面上的波一致的方式弯曲的白线就足够了。因此，扭曲相同的波。  
+```cpp
+float caustic_noise = pow(1.0 - abs(sin(fbm(ro.xy) * 6.28)), 16.0);
+vec3 caustic = clamp(sqrt(vec3(caustic_noise) * col2), vec3(0.0), vec3(1.0));
+waterfloor = clamp(waterfloor + caustic, vec3(0.0), vec3(1.0));
+```
+在没有处理水下对从水面进入的光的反应时，你绝对想要尖刻。  
