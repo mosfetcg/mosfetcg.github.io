@@ -90,33 +90,30 @@ disk += mix(ring_mask * vec3(1.0, 0.1, 0.0), ring_mask * vec3(1.0), dist); // �
 
 由于缺乏对象，这类系统中本身所含的要素，无法利用任何着色模型。另外，一旦分支，就会造成混乱。  
 
-## 使用体积云
-本文对云的正确结果的定义来自于**体积渲染(volumetric rendering)**。体积数据可以从噪声获得。  
+## 关于体积云
+对云的正确视觉结果定义来自**体积渲染(volumetric rendering)**。  
 
-先看看体积云是什么样的。事实上，这些对象在任何时间点都具有相当不错的结果。  
-将FBM噪声作为**参与介质**渲染可以获得具有正确光照的云。盒子可以是某种符合大气形状的东西。  
+先看看是什么样的。参与介质的渲染请见另一篇帖子。  
+```
+https://graphics.stanford.edu/courses/cs348b-20-spring-content/lectures/17_volume/17_volume_slides.pdf
+https://www.scratchapixel.com/lessons/3d-basic-rendering/volume-rendering-for-developers/volume-rendering-summary-equations.html
+```
 <div class="x gr txac">
   <div class="x la flex mg0">
     <div class="x la item4-lg item12 pd0">
-      <img src="/assets/i/6-1.png">
-    </div>
-    <div class="x la item4-lg item12 pd0">
-       <img src="/assets/i/6-2.png">
-    </div>
-    <div class="x la item4-lg item12 pd0">
-       <img src="/assets/i/6-3.png">
+      <img src="/assets/i/7-1.png">
     </div>
   </div>
-  <p>图1：使用体积云</p>
+  <p>图1：噪声单位体积球</p>
 </div>
 
 ## 近似云
-我一直想删除的一段话是，不要使用2D噪声。以避免遇到一些纹理映射的奇怪问题。  
-需要读者先理解2D版本。借助现代工具——AI来查找代码，另外分析错误也很有效，特别是一些奇怪的命中交叉问题。  
+我一直最想删除的一段话是提醒自己不要使用2D噪声。以避免遇到一些纹理映射的奇怪问题。  
+读者需要先理解2DFBM。然后方便地扩展到3D噪声，这类代码通常行数过多并且绝对非常厌倦。借助AI来查找此类基础代码。顺便一提，分析错误也很有效，特别是一些奇怪的命中交叉问题。  
 
-如前所述，它们通常很难正确着色。采样次数也非常困扰。如果都选择在边界附近，那么结果很容易与事实不符。  
-用它们的一个理由是在白天场景中。而晚上或者傍晚则很难、甚至无法近似出正确的颜色。  
-两个样本总是比单个更好，更有层次感，显著减少聚集或者扁平感。  
+如前所述，它们通常很难正确着色。使用什么采样也非常困扰。如果都选择在边界附近，那么结果很容易与事实不符。  
+用它们的一个基本理由是在白天场景中看不出错误的情况。而晚上或者傍晚则很难、甚至无法近似出正确的颜色。  
+至少两个样本总是比单个更好，更有层次感，显著减少聚集或者扁平感。  
 对于着色，可以像我这样，低密度混合背景和白色，中间为白色，最高为灰色。  
 ```cpp
 // 处理大气弧度
@@ -138,10 +135,10 @@ return vec3(1.0 - 0.1* pow((dense - 0.75) * 4.0, 4.0));
 <div class="x gr txac">
   <div class="x la flex mg0">
     <div class="x la item4-lg item12 pd0">
-      <img src="/assets/i/6-4.png">
+      <img src="/assets/i/6-1.png">
     </div>
   </div>
-  <p>图2：近似结果</p>
+  <p>图2：近似一些云</p>
 </div>
 
 ## 环境光遮蔽

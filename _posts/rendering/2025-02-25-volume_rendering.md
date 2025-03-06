@@ -5,68 +5,61 @@ author: mosfet
 category: rendering
 tags: 渲染 参与介质
 ---
-#### 薄雾
-`体积(volume)`是世界中的一片密度空间，术语上这种类薄雾质(smoke/fog/mist)通常称为体积介质或`参与介质(participating media)`。其照明称为体积渲染问题。另一种有关特性称为`子表面散射(subsurface scattering)`，即将一块稠密薄雾放入另一物体内部。  
 
-大多数情况下，我们只处理**表面**的可见性和着色，实际上在两个介质之间不会计算任何东西，因此体积从本质上来说不同。一种技巧是将这种分散性等效为更容易接受的无数随机表面，在穿越体积时，有时视为可撞击表面，有时被认为是真空的，直到撞击另一处。  
+该文件是备份。2025/3/6。  
 
-理论上(不说明)，散射的可能性是穿越距离和密度共同决定的。我们先限定恒定密度下的这一简单模型，达到散射条件的情况近似于光线穿过一个随机距离，例如，可以选择`rd`作为单位。接下来我们必须仔细计算该方向上体积内的剩余距离(指定边界框)，特别是仔细考虑命中体积但未进入体积，或者位于体积两种不同交叉情况。在体积内时，一旦我们比较这两个长度，随机距离未能穿越体积时，就发生散射。这时可以使用密度因子和修正长度。最好选择更合适的交叉函数，只能获取最近交点在这种模型下将很难使用。  
-```cpp
-vec3 volume_sky( in vec3 dir) {
-  vec3 albedo = vec3(1.0);
+## 薄雾
+类薄雾质(smoke/fog/mist)通常称为`体积(volume)`或`参与介质(participating media)`。  
+类似其表面和照明的问题称为体积渲染问题，大多数情况下，我们只处理**表面**的可见性和着色。而然，实际上也不能将内部理解为表面，因为只是粒子密度对光照的反应，算法通常必须寻找考虑全部内部信息。  
+另一种有关特性称为`子表面散射(subsurface scattering)`，即将一块稠密薄雾放入另一物体内部。  
 
-  vec3 ro = vec3(0.0);
-  vec3 rd = dir;
-  const float const_dense = 2.0;
+## 活动
+当光穿越参与介质时，该位置的粒子可能降低光照，发生吸收和`外散射(Out-scattering)`；或获取能量，要么自身主动发光`(emission)`，另外`内散射(in-scattering)`也主要将光照的一部分直接定向到相机中。另外，总体的光照强度会随着距离和比尔法降低。  
+```ruby
+# 内部开始计算透光率，计算命中边界k(只需要计算一次)
+if (total_dx > k) break; // exit
+float dx = rand() * 0.1;
+total_dx += dx;
 
-  for (int i = 1; i <= 10; i++) {
-    vec3 p = ro;
-    float view_thickness_factor = noise(dir.xz * 5.0);
-    // return vec3(view_thickness_factor);
-    vec2 k = iBox2(ro - vec3(0.0, 15.0, 0.0), rd, vec3(100.0, 5.0 + view_thickness_factor, 100.0));
-    // 从外面命中体积，要么直接进入体积采样，要么不散射并尝试继续前进
-    if (k.x > 0.0 && k.y > 0.0) {
-      p = ro + rd * (k.x + C_EPS);
-      ro = p;
-    } else if (k.x < 0.0 && k.y > 0.0) {
-      // return vec3(1.0, 0.0, 0.0);
-      // 处于内部，前方只命中一个交点
-      float vol_dist = 0.0;
-      vol_dist = k.y;
-      // 使用密度因子，密度越大，那么减少此距离以增加可能性
-      vec3 phase = p * 0.3 + wind_dir * u_time;
-      float dense_factor = max(0.01, fbm(phase + fbm(phase, 0.5, 2.0, 0.5), 0.5, 2.0, 0.5) - 0.5);
-      float view_factor = 15.0 / (length(ro) + 1.0);
-      dense_factor *= view_factor;
-      float hit_dist = rand() * (1.0 / dense_factor);
-      if (hit_dist < vol_dist) {
-        p = ro + rd * hit_dist;
-        rd = H_random_unit_vector();
-        ro = p;
-        albedo *= (1.0 - dense_factor) * vol_dist / hit_dist;
-        // albedo *= (1.0 - dense_factor) * hit_dist / vol_dist;
-        // 当前散射失败并穿过了体积，命中背景
-      } else {
-        albedo *= sky(rd);
-        break;
-      }
-    } else {
-      albedo *= sky(rd);
-      break;
-    }
-  }
-  return albedo;
-}
+# 渲染方程
+Lo = ∫all_line_dx|T(total_dx)S(p) dx
+# 如果样本dx已经求和所有k，这种方式不需要除以p，否则dx应该取随机总长步骤
+Σ = g/p; p=(1.0 / k) => ∫p = dx/k
+# 另外一种方式中，+= T * s * dx
+
+# A(p)吸收密度 s(p)散射密度，内外兼用 W = s/s+A
+
+# transmittance 比尔法因子
+T(total_dx) = exp(-optical_depth)
+t(total_dx) = optical_depth = ∫all_line_dx|(A+s)(p)dx  # 双降低密度，代表dx会损失多少百分比光
+
+# 中间位置光照(内散射)
+S(p) = s(p)∫all_sphere|ρLi dv  # 散射密度，内散射强度
+
+# Emission
+E = ∫A(p)Le dx
+```
+```
+https://graphics.stanford.edu/courses/cs348b-20-spring-content/lectures/17_volume/17_volume_slides.pdf
+https://www.scratchapixel.com/lessons/3d-basic-rendering/volume-rendering-for-developers/volume-rendering-summary-equations.html
 ```
 
+## 评估边界
+简单的办法是发现可以交叉时(但在外部)强制进入对象内部。最好选择更合适的交叉函数，让自己知道在外部还是内部。  
+
+## 结果
 <div class="x gr txac">
   <div class="x la flex mg0">
-    <div class="x la item4-lg item12 pd0">
+    <div class="x la item5-lg item12 pd0">
       <img src="/assets/i/7-1.png">
     </div>
-    <div class="x la item4-lg item12 pd0">
+    <div class="x la item5-lg item12 pd0">
        <img src="/assets/i/7-2.png">
     </div>
   </div>
-  <p>图1：体积云</p>
+  <p>图1：噪声单位体积球</p>
 </div>
+
+## 旧方法
+旧方法似乎存在问题。该实现将体积视为微型表面，并在随机值后散射，直到dx可以穿过体积边界。  
+但是没有说明结果如何计算。  
