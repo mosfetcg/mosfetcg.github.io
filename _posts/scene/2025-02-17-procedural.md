@@ -34,8 +34,12 @@ vec3 sun_pos;
 vec3 sun_rd;
 vec3 sun_alb = vec3(1.0, 0.8, 0.0);
 
-global_time = mod(FIX_DAYTIME ? DAYTIME : u_time * 2.9, 24.0);
-sun_rd = normalize(vec3(0.0, -sin((global_time + 12.0) / 3.8), cos((global_time + 12.0) / 3.8)));
+global_time = FIX_DAYTIME ? DAYTIME : -sin(u_time * .5) * 6.0 + 12.0;
+sun_rd = vec3(
+  -sin((global_time + 12.0) / 3.8),
+  cos((global_time + 12.0) / 3.8),
+  0.0
+);
 sun_pos = sun_rd * 1000.0;
 ```
 ## 大气的形状
@@ -65,7 +69,7 @@ https://www.scratchapixel.com/lessons/procedural-generation-virtual-worlds/simul
       <img src="https://www.scratchapixel.com/images/atmospheric%20scattering/as-nishita1.png?">
     </div>
   </div>
-  <p>图：大气在不同高度下的颜色</p>
+  <p>引用图片：大气在不同高度下的颜色</p>
 </div>
 
 光子在进入大气层后会被空气中的各种粒子散射损失能量，气体中的粒子密度取决于高度。  
@@ -73,7 +77,7 @@ https://www.scratchapixel.com/lessons/procedural-generation-virtual-worlds/simul
 p(h) = p(0)exp(-h)
 ```
 `雷利散射(Rayleigh scattering)`描述了光或其他电磁辐射因比其**波长小**的多的粒子造成散射时的某种观察。  
-观察上，较短波长（蓝色）的散射比较长波长（红色）的散射更强烈。这导致天空各个区域都会出现间接的蓝光和紫光。人眼对这种波长组合的反应就像是蓝光和白光的组合。在日落时，由于辐射的传播距离更远，大多数蓝光已经散射完，剩下的波长让天空呈现橘红色。  
+从我们的观察角度来说，较短波长（蓝色）的散射比较长波长（红色）的散射更强烈。这导致天空各个区域都会出现间接的蓝光和紫光。人眼对这种波长组合的反应就像是蓝光和白光的组合。在日落时，由于辐射的传播距离更远，大多数蓝光已经散射完，剩下的波长让天空呈现橘红色。  
 ```ruby
 # 本文β符号表示因子，当不标记其他符号时表示散射量βS。后一个后缀R、M表示对应的两种散射。类似的约定适用于HR和HM等常数。  
 βR(h,λ) = 8PI³(n²-1)² |* exp(-h/HR)
@@ -93,10 +97,11 @@ cos = dot(v, sun);
 ```
 蓝光的波长更短，其初始值将更高。因此其对应的散射感觉越强烈。  
 另一种散射称为`米氏散射(Mie scattering)`，描述了更大的颗粒、灰尘、沙子对光的散射作用，使它们呈现灰白色。  
+米氏散射造成太阳周围主要白色光晕以及地平线上天空变亮/变暗。雷利散射解释造成天空呈现蓝色/红色/橙色的原因。  
 ```ruby
 βM(h,λ) = βM(0,λ)exp(-h/HM)
 # HM(scale height) = 1.2KM
-        = 210e-5 exp(-h/HM)
+        = 21e-6 exp(-h/HM)
 
 βEM(h) = 1.1βM(h)
 
@@ -129,6 +134,91 @@ LoR + LoM
 Sky = SunBase * ρ ∫all_line_dx|T1T2βS(h)dx
 ```
 到这里我们的理论就结束了，读者也可以直接使用引用中开源的大气函数。  
+这是我们的版本。  
+```cpp
+vec2 iSphere( in vec3 ro, in vec3 rd, in vec3 ce, float ra) {
+  vec3 oc = ro - ce;
+  float b = dot(oc, rd);
+  float c = dot(oc, oc) - ra * ra;
+  float h = b * b - c;
+  if (h < 0.0) return vec2(-1.0); // no intersection
+  h = sqrt(h);
+  return vec2(-b - h, -b + h);
+}
+vec3 atmosphere( in vec3 ro, in vec3 rd, in vec3 sd) {
+  const float sunbase = 15.0; // sunbase
+  const float re = 6371e3; // unit: meter
+  const float ra = 6471e3; // unit: meter
+  const vec3 Rbeta0 = vec3(5.8e-6, 13.5e-6, 33.1e-6); // unit: /m
+  const vec3 Mbeta0 = vec3(21e-6);
+  const float hr = 8e3;
+  const float hm = 1.2e3;
+  const float g = 0.76;
+
+  // 将用户输入位置参考到地球中心的位系中，地面处为半径，高度为ro - re
+  ro += vec3(0.0, re, 0.0);
+  float t = iSphere(ro, rd, vec3(0.0), ra).y; // ro -> t
+
+  // 求解方程分解为固定段的积分
+  float segement = 16.0;
+  float dx = t / segement;
+
+  // 计算常数
+  float cos_theta = dot(rd, sd);
+  float Rphase = 0.0597 * (1.0 + cos_theta * cos_theta);
+  float Mphase = 0.1194 * (1.0 - g * g) * (1.0 + cos_theta * cos_theta) /
+    ((2.0 + g * g) * pow(1.0 + g * g - 2.0 * g * cos_theta, 1.5));
+
+  vec3 R = vec3(0.0), M = vec3(0.0); // 重复mie
+  float Rbeta_total = 0.0, Mbeta_total = 0.0; // 重复mie
+
+  for (int i = 1; i <= int(segement); i++) {
+    // 计算T1
+    float h = length(ro) - re;
+
+    Rbeta_total += exp(-h / hr) * dx;
+    vec3 RT1 = exp(-Rbeta0 * Rbeta_total);
+    Mbeta_total += exp(-h / hm) * dx; // 重复mie
+    vec3 MT1 = exp(-Mbeta0 * Mbeta_total) * 1.1; // betaE * 1.1
+
+    // 计算S、和T2(发射sd)
+    float segement2 = 8.0;
+    vec3 ro2 = ro;
+    float t2 = iSphere(ro2, sd, vec3(0.0), ra).y;
+    float dx2 = t2 / segement2;
+
+    float Rbeta_total2, Mbeta_total2 = 0.0; // 重复mie
+    for (int j = 1; j <= int(segement2); j++) {
+      float h2 = length(ro2) - re;
+
+      Rbeta_total2 += exp(-h2 / hr) * dx2;
+      Mbeta_total2 += exp(-h2 / hm) * dx2; // 重复mie
+
+      ro2 += sd * dx2;
+    }
+    vec3 RT2 = exp(-Rbeta0 * Rbeta_total2);
+    vec3 MT2 = exp(-Mbeta0 * Mbeta_total2) * 1.1; // 重复mie
+
+    // 累积到结果，注意只是积分项
+    R += RT1 * RT2 * Rbeta0 * exp(-h / hr) * dx;
+    M += MT1 * MT2 * Mbeta0 * exp(-h / hm) * dx;
+
+    // 之后再移动
+    ro += rd * dx;
+  }
+  return sunbase * (Rphase * R + Mphase * M);
+  return sunbase * Mphase * M;
+  return sunbase * Rphase * R;
+}
+```
+<div class="x gr txac">
+  <div class="x la flex mg0">
+    <div class="x la item6-lg item12 pd0">
+      <img src="/assets/i/6-1.png">
+    </div>
+  </div>
+  <p>图1：地平线：雷利+米氏散射</p>
+</div>
 
 ## 圆盘
 圆盘简易地表示天体，根据时间移动，通常的一个实例是指示太阳的光源位置。  
@@ -163,7 +253,7 @@ disk += mix(ring_mask * vec3(1.0, 0.1, 0.0), ring_mask * vec3(1.0), dist); // �
 由于缺乏对象，这类系统中本身所含的要素，无法利用任何着色模型。另外，一旦分支，就会造成混乱。  
 
 ## 关于体积云
-对云的正确视觉结果定义来自**体积渲染(volumetric rendering)**。  
+目前对云的正确视觉结果定义来自**体积渲染(volumetric rendering)**。  
 
 先看看是什么样的。参与介质的渲染请见另一篇帖子。  
 ```
@@ -181,7 +271,7 @@ https://www.scratchapixel.com/lessons/3d-basic-rendering/volume-rendering-for-de
 
 ## 近似云
 我一直最想删除的一段话是提醒自己不要使用2D噪声。以避免遇到一些纹理映射的奇怪问题。  
-读者需要先理解2DFBM。然后方便地扩展到3D噪声，这类代码通常行数过多并且绝对非常厌倦。借助AI来查找此类基础代码。顺便一提，分析错误也很有效，特别是一些奇怪的命中交叉问题。  
+读者需要先理解2DFBM。然后方便地扩展到3D噪声，这类代码需要重复劳动并且扩展原理很简单。借助AI来查找此类基础代码。顺便一提，分析错误也很有效，特别是一些奇怪的命中交叉问题。  
 
 如前所述，它们通常很难正确着色。使用什么采样也非常困扰。如果都选择在边界附近，那么结果很容易与事实不符。  
 用它们的一个基本理由是在白天场景中看不出错误的情况。而晚上或者傍晚则很难、甚至无法近似出正确的颜色。  
@@ -207,7 +297,7 @@ return vec3(1.0 - 0.1* pow((dense - 0.75) * 4.0, 4.0));
 <div class="x gr txac">
   <div class="x la flex mg0">
     <div class="x la item4-lg item12 pd0">
-      <img src="/assets/i/6-1.png">
+      <img src="/assets/i/6-2.png">
     </div>
   </div>
   <p>图2：近似一些云</p>
