@@ -245,17 +245,17 @@ float ring_mask = 1.0 / (1.0 + pow((dist - 0.3 * radius) * 2.0, 2.0));
 disk += mix(ring_mask * vec3(1.0, 0.1, 0.0), ring_mask * vec3(1.0), dist); // 光晕不跟随albedo外环过度到白色
 ```
 
-## 近似插值
-比物理更便宜的是直接根据经验插值。  
-实际上，笔者在大多数情况下都使用了它们。但是，这种非物理的经验程序化很容易造成混乱。  
-因为它们本质上不是真正的对象，第一是几乎无法直接参与场景照明，最后必然出现单独着色的尴尬情况。  
+## 近似大气层
+比物理更便宜的大气颜色是直接根据经验插值。  
+实际上，笔者在大多数情况下都使用了它们。但是，这种非物理的经验很容易造成代码混乱。  
 
-由于缺乏对象，这类系统中本身所含的要素，无法利用任何着色模型。另外，一旦分支，就会造成混乱。  
+例如，需要通过时间索引该方法时，不仅结果很难拟合正确现象，而且分支越来越混乱。  
+尽管这样的天空仍然可以正常作为光源(一般用途)参与照明，而然对于其他对象，它们的近似方法或多或少将很尴尬。最后必然出现单独着色的尴尬情况，这对于云等体积对象是致命的。因此，必须仔细考虑这些缺点，是否会影响到系统以后的要素。  
 
 ## 关于体积云
 目前对云的正确视觉结果定义来自**体积渲染(volumetric rendering)**。  
 
-先看看是什么样的。参与介质的渲染请见另一篇帖子。  
+先看看是什么样的。参与介质的渲染请见另一篇文章。  
 ```
 https://graphics.stanford.edu/courses/cs348b-20-spring-content/lectures/17_volume/17_volume_slides.pdf
 https://www.scratchapixel.com/lessons/3d-basic-rendering/volume-rendering-for-developers/volume-rendering-summary-equations.html
@@ -266,7 +266,7 @@ https://www.scratchapixel.com/lessons/3d-basic-rendering/volume-rendering-for-de
       <img src="/assets/i/7-1.png">
     </div>
   </div>
-  <p>图1：噪声单位体积球</p>
+  <p>图2：渲染噪声体积球</p>
 </div>
 
 ## 近似云
@@ -300,7 +300,7 @@ return vec3(1.0 - 0.1* pow((dense - 0.75) * 4.0, 4.0));
       <img src="/assets/i/6-2.png">
     </div>
   </div>
-  <p>图2：近似一些云</p>
+  <p>图3：近似一些云</p>
 </div>
 
 ## 环境光遮蔽
