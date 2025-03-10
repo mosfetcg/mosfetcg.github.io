@@ -301,23 +301,21 @@ https://www.shadertoy.com/view/4d2cDy
 有关这些问题的说明您可以检查引用中的参考例子。  
 
 ## 流体
-原则上对云等流体的模拟最好基于流体动力学(fluid dynamics)，但该领域笔者从未深入研究。  
-根据一篇论文的描述，启发式方法占据主流。  
+原则上对云等流体的模拟最好基于流体动力学(fluid dynamics)，但该笔者从未深入研究该领域。  
+根据某些资料的统计，启发式方法占据主流。  
 
-## 
-```cpp
-float d = 1.01 / (dot(v, vec3(0.0, 1.0, 0.0)) + 0.01);
-if (v.y < 0.0) return sky;
-float op_curvature_mask = smoothstep(55.0, 1.0, d);
-vec3 p1 = v * d + wind_dir * op_curvature_mask * u_time;
-vec3 p2 = 1.2 * v * d + wind_dir * op_curvature_mask * u_time;
-float dense = (cloudf(p1 + cloudf(p1, 0.5, 2.0, 0.5), 0.5, 2.0, 0.5) +
-  cloudf(p2 + cloudf(p2, 0.5, 2.0, 0.5), 0.5, 2.0, 0.5)) * 0.5;
-dense = smoothstep(0.5, 0.7, dense * op_curvature_mask);
-if (dense == 0.0) return sky;
-if (dense < 0.75) return sky + vec3(dense * 1.33);
-return vec3(1.0 - 0.1 * pow((dense - 0.75) * 4.0, 4.0));
+## 启发式云
 ```
+Stratus  层云
+低空 水平分层 底部均匀 无特征 高雾 形状像雾 ！整体覆盖
+Cirrus   卷须云
+高云 纤细 细腻 线条 羽毛状 纤维 ！一条条平行的带
+Cumulus  堆(积)云
+低空 云底平坦 蓬松、棉花状或蓬松状 一堆 ！单、线、团分布
+```
+一种最古老的实现是粗暴地将FBM数据映射到一个薄薄的球面上，结果是极其不真实的，并且与我们使用的其他真实技术产生严重的不协调感。  
+样本、噪声、位置全都不符合任何一种云的特征。我们至少应该拒绝这种技术并认为最根本的起点必须选择更好的"容器"来表达FBM，至少不能是平面！尽管此FBM可能只能类似地接近一种云，但这至少是合理的并且让我们感到满意的一个开始。  
+卷须云的体积可能更难，因此最终决定致力于一种简单形状云的实现。积云符合一般人对云的直觉。  
 
 ## D. 
 ## 环境光遮蔽
