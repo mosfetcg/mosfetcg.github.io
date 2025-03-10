@@ -57,7 +57,7 @@ https://www.scratchapixel.com/lessons/3d-basic-rendering/volume-rendering-for-de
        <img src="/assets/i/7-2.png">
     </div>
   </div>
-  <p>图1：噪声单位体积球</p>
+  <p></p>
 </div>
 
 ## 旧方法
