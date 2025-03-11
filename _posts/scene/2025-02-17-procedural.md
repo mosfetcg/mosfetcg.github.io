@@ -95,7 +95,7 @@ cos = dot(v, sun);
 ```
 蓝光的波长更短，其初始值将更高。因此其对应的散射感觉越强烈。  
 另一种散射称为`米氏散射(Mie scattering)`，描述了更大的颗粒、灰尘、沙子对光的散射作用，使它们呈现灰白色。  
-米氏散射造成太阳周围主要白色光晕以及地平线上天空变亮/变暗。雷利散射解释造成天空呈现蓝色/红色/橙色的原因。  
+米氏散射造成太阳周围主要白色光晕以及地平线处薄层变亮/变暗。雷利散射解释造成天空呈现蓝色/红色/橙色的原因。  
 ```ruby
 βM(h,λ) = βM(0,λ)exp(-h/HM)
 # HM(scale height) = 1.2KM
@@ -145,7 +145,7 @@ vec2 iSphere( in vec3 ro, in vec3 rd, in vec3 ce, float ra) {
   h = sqrt(h);
   return vec2(-b - h, -b + h);
 }
-vec3 atmosphere( in vec3 ro, in vec3 rd, in vec3 sd) {
+vec3 atmosphere( in vec3 ro, in vec3 rd) {
   const float sunbase = 15.0; // sunbase
   const float re = 6371e3; // unit: meter
   const float ra = 6471e3; // unit: meter
@@ -155,7 +155,7 @@ vec3 atmosphere( in vec3 ro, in vec3 rd, in vec3 sd) {
   const float hm = 1.2e3;
   const float g = 0.76;
 
-  // 将输入位置参考到地球中心的位系中，地面处为半径，当前高度为ro - re
+  // 将输入位置参考到地球中心的位系中，地面处为半径高，任何ro的大气高度为ro - re
   ro += vec3(0.0, re, 0.0);
   float t = iSphere(ro, rd, vec3(0.0), ra).y; // ro -> t
 
@@ -164,6 +164,7 @@ vec3 atmosphere( in vec3 ro, in vec3 rd, in vec3 sd) {
   float dx = t / segement;
 
   // 计算常数
+  vec3 sd = sun_rd; //??
   float cos_theta = dot(rd, sd);
   float Rphase = 0.0597 * (1.0 + cos_theta * cos_theta);
   float Mphase = 0.1194 * (1.0 - g * g) * (1.0 + cos_theta * cos_theta) /
@@ -174,10 +175,10 @@ vec3 atmosphere( in vec3 ro, in vec3 rd, in vec3 sd) {
 
   for (int i = 1; i <= int(segement); i++) {
     float h = length(ro) - re;
-    // 如果朝着地球，那么始终length(ro) < re，即使太阳在下方也没有意义因为这里是大地而不是空气
+    // 只要光线割到地球就被大地遮挡，而这相当于length(ro) < re
     if (h < 0.0) return vec3(0.0);
 
-    // 优化1：存储消光量，减少exp调用
+    // 优化1：存储消光量的衰减部分，减少exp调用
     float Re = exp(-h / hr), Me = exp(-h / hm);
     R_tmp += Re * dx;
     M_tmp += Me * dx; // 重复mie
@@ -190,6 +191,8 @@ vec3 atmosphere( in vec3 ro, in vec3 rd, in vec3 sd) {
     float R_tmp2, M_tmp2 = 0.0; // 重复mie
     for (int j = 1; j <= int(segement2); j++) {
       float h2 = length(ro2) - re;
+      // 考虑太阳在背面是有可能割到并遮挡的，但这样会失去漂亮的黄昏
+      // if (h2 < 0.0) return vec3(0.0);
 
       R_tmp2 += exp(-h2 / hr) * dx2;
       M_tmp2 += exp(-h2 / hm) * dx2; // 重复mie
@@ -198,16 +201,16 @@ vec3 atmosphere( in vec3 ro, in vec3 rd, in vec3 sd) {
     }
 
     vec3 RTT2 = exp(-Rbeta0 * (R_tmp + R_tmp2));
-    vec3 MTT2 = exp(-Mbeta0 * (M_tmp + M_tmp2) * 1.1); // 重复mie 消光 * 1.1
+    vec3 MTT2 = exp(-Mbeta0 * (M_tmp + M_tmp2) * 1.1); // 重复mie 消光 S*1.1
 
-    // 累积到结果，注意R只是积分项。并且我们将Rbeta0 * Re的常数被移动到外面
+    // 累积到结果，注意R只是积分项。优化2：并且我们将Rbeta0 * Re的常数部分移动到外面
     R += RTT2 * Re * dx;
     M += MTT2 * Me * dx;
 
     // 之后再移动
     ro += rd * dx;
   }
-  return sunbase * (Rphase * R * Rbeta0 + Mphase * M * Mbeta0);
+  return sunbase * (Rphase * R * Rbeta0 + Mphase * M * Mbeta0); // 建议在外部输出时clamp
   return sunbase * Mphase * M * Mbeta0;
   return sunbase * Rphase * R * Rbeta0;
 }
