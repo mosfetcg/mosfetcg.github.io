@@ -6,7 +6,7 @@ category: rendering
 tags: 渲染 参与介质
 ---
 
-该文件是备份。2025/3/6。  
+该文件是备份。2025/3/11。  
 
 ## 薄雾
 类薄雾质(smoke/fog/mist)通常称为`体积(volume)`或`参与介质(participating media)`。  
@@ -16,28 +16,40 @@ tags: 渲染 参与介质
 ## 活动
 当光穿越参与介质时，该位置的粒子可能降低光照，发生吸收和`外散射(Out-scattering)`；或获取能量，要么自身主动发光`(emission)`，另外`内散射(in-scattering)`也主要将光照的一部分直接定向到相机中。另外，总体的光照强度会随着距离和比尔法降低。  
 ```ruby
-# 内部开始计算透光率，计算命中边界k(只需要计算一次)
-if (total_dx > k) break; // exit
-float dx = rand() * 0.1;
-total_dx += dx;
-
 # 渲染方程
-Lo = ∫all_line_dx|T(total_dx)S(p) dx
-# 如果样本dx已经求和所有k，这种方式不需要除以p，否则dx应该取随机总长步骤
-Σ = g/p; p=(1.0 / k) => ∫p = dx/k
-# 另外一种方式中，+= T * s * dx
+Lo = ∫all_line_dx|T(p)S(p) dx
 
-# A(p)吸收密度 s(p)散射密度，内外兼用 W = s/s+A
+# 我们使用标准Sigma符号表示密度
+σa(p) σs(p)          # 吸收/散射(内外兼用)
+σt(p) = σa(p)+σs(p)  # 消光(extinction)
+                     # 结果白度：s/t
 
-# transmittance 比尔法因子
-T(total_dx) = exp(-optical_depth)
-t(total_dx) = optical_depth = ∫all_line_dx|(A+s)(p)dx  # 双降低密度，代表dx会损失多少百分比光
+# 发射率(transmittance) 指多少光可以传达。遵循比尔法衰减S项
+T(p) = exp(- )
+          ↑ ∫all_line_dx|σt(p)dx   # 这个积分称为光学长度或深度(Optical distance/depth)
 
-# 中间位置光照(内散射)
-S(p) = s(p)∫all_sphere|ρLi dv  # 散射密度，内散射强度
+# 光照(内散射)
+S(p) = σs(p)∫all_sphere|ρLi dv  # 散射密度，内散射强度
+# ρ ~ Phase
+Isotropic           1/4Pi
+Rayleigh Mie
+Henyey-Greenstein   1/4pi * (1-g²)/(1+g²-2gcos)^1.5
 
-# Emission
-E = ∫A(p)Le dx
+# 自发光(emission)
+E(p) = σa(p)Le(p) dx
+# 可选，加入到S中。
+```
+```ruby
+# 蒙特卡洛求解
+Σ(g/p)
+# dx可以用随机值，单位概率为1/line，因此概率为dx/line
+p = dx / line
+
+# 固定段求解，dx用固定值
++= dx * T S
+
+# 加入背景
+Lo += T(final) * S(final) # 如天空等。
 ```
 ```
 https://graphics.stanford.edu/courses/cs348b-20-spring-content/lectures/17_volume/17_volume_slides.pdf
@@ -59,7 +71,3 @@ https://www.scratchapixel.com/lessons/3d-basic-rendering/volume-rendering-for-de
   </div>
   <p></p>
 </div>
-
-## 旧方法
-旧方法似乎存在问题。该实现将体积视为微型表面，并在随机值后散射，直到dx可以穿过体积边界。  
-但是没有说明结果如何计算。  
