@@ -46,7 +46,7 @@ sun_pos = sun_rd * 1000.0;
 ## 大气的形状
 大气是环绕行星的气体环，地球半径很大(6300km)，大气高度很低(100KM)。  
 有时候对这种形状理解不充足，比如水平线以上的(可视)空间实际上是一**圆段**。朝着水平方向看见比单个垂直高度多得多的空间是很正常的。  
-不得不提的是，下方还存在一些空隙，从两个对称的圆段角开始。  
+不得不提的是，小球体下方存在一些空隙如何解释？这两个对称的圆段角开始的地方在微分情况下可视为平面，因此很难看到下方。  
 
 有时候需要评估到该大气边缘的距离，我们可以采用真实的数据。除了实际计算交叉地球和大气，如果只是不深思熟虑地在单位球中进行采样将不匹配该形状。  
 我将提到一种更简单的非交叉方法。该近似方式根据角度缩放天顶处的单位高度(zenith = 1)以获得比率。因此可在可观的穹掠角获得类似的结果，在到达0.5Pi = 1.7之前将得到很高的值。我们可以只是说该距离大约比到天顶大`d`倍。  
@@ -155,7 +155,7 @@ vec3 atmosphere( in vec3 ro, in vec3 rd, in vec3 sd) {
   const float hm = 1.2e3;
   const float g = 0.76;
 
-  // 将用户输入位置参考到地球中心的位系中，地面处为半径，高度为ro - re
+  // 将输入位置参考到地球中心的位系中，地面处为半径，当前高度为ro - re
   ro += vec3(0.0, re, 0.0);
   float t = iSphere(ro, rd, vec3(0.0), ra).y; // ro -> t
 
@@ -170,50 +170,51 @@ vec3 atmosphere( in vec3 ro, in vec3 rd, in vec3 sd) {
     ((2.0 + g * g) * pow(1.0 + g * g - 2.0 * g * cos_theta, 1.5));
 
   vec3 R = vec3(0.0), M = vec3(0.0); // 重复mie
-  float Rbeta_total = 0.0, Mbeta_total = 0.0; // 重复mie
+  float R_tmp = 0.0, M_tmp = 0.0; // 重复mie
 
   for (int i = 1; i <= int(segement); i++) {
-    // 计算T1
     float h = length(ro) - re;
+    // 如果朝着地球，那么始终length(ro) < re，即使太阳在下方也没有意义因为这里是大地而不是空气
+    if (h < 0.0) return vec3(0.0);
 
-    Rbeta_total += exp(-h / hr) * dx;
-    vec3 RT1 = exp(-Rbeta0 * Rbeta_total);
-    Mbeta_total += exp(-h / hm) * dx; // 重复mie
-    vec3 MT1 = exp(-Mbeta0 * Mbeta_total) * 1.1; // betaE * 1.1
+    // 优化1：存储消光量，减少exp调用
+    float Re = exp(-h / hr), Me = exp(-h / hm);
+    R_tmp += Re * dx;
+    M_tmp += Me * dx; // 重复mie
 
-    // 计算S、和T2(发射sd)
+    // 计算T2(发射sd)
     float segement2 = 8.0;
     vec3 ro2 = ro;
     float t2 = iSphere(ro2, sd, vec3(0.0), ra).y;
     float dx2 = t2 / segement2;
-
-    float Rbeta_total2, Mbeta_total2 = 0.0; // 重复mie
+    float R_tmp2, M_tmp2 = 0.0; // 重复mie
     for (int j = 1; j <= int(segement2); j++) {
       float h2 = length(ro2) - re;
 
-      Rbeta_total2 += exp(-h2 / hr) * dx2;
-      Mbeta_total2 += exp(-h2 / hm) * dx2; // 重复mie
+      R_tmp2 += exp(-h2 / hr) * dx2;
+      M_tmp2 += exp(-h2 / hm) * dx2; // 重复mie
 
       ro2 += sd * dx2;
     }
-    vec3 RT2 = exp(-Rbeta0 * Rbeta_total2);
-    vec3 MT2 = exp(-Mbeta0 * Mbeta_total2) * 1.1; // 重复mie
 
-    // 累积到结果，注意只是积分项
-    R += RT1 * RT2 * Rbeta0 * exp(-h / hr) * dx;
-    M += MT1 * MT2 * Mbeta0 * exp(-h / hm) * dx;
+    vec3 RTT2 = exp(-Rbeta0 * (R_tmp + R_tmp2));
+    vec3 MTT2 = exp(-Mbeta0 * (M_tmp + M_tmp2) * 1.1); // 重复mie 消光 * 1.1
+
+    // 累积到结果，注意R只是积分项。并且我们将Rbeta0 * Re的常数被移动到外面
+    R += RTT2 * Re * dx;
+    M += MTT2 * Me * dx;
 
     // 之后再移动
     ro += rd * dx;
   }
-  return sunbase * (Rphase * R + Mphase * M);
-  return sunbase * Mphase * M;
-  return sunbase * Rphase * R;
+  return sunbase * (Rphase * R * Rbeta0 + Mphase * M * Mbeta0);
+  return sunbase * Mphase * M * Mbeta0;
+  return sunbase * Rphase * R * Rbeta0;
 }
 ```
 <div class="x gr txac">
   <div class="x la flex mg0">
-    <div class="x la item6-lg item12 pd0">
+    <div class="x la item5-lg item12 pd0">
       <img src="/assets/i/6-1.png">
     </div>
   </div>
@@ -315,25 +316,22 @@ Cumulus  堆(积)云
 样本、噪声、位置全都不符合任何一种云的特征。我们至少应该拒绝这种技术并认为最根本的起点必须选择更好的"容器"来表达FBM，至少不能是平面！尽管此FBM可能只能类似地接近一种云，但这至少是合理的并且让我们感到满意的一个开始。  
 卷须云的体积可能更难，因此最终决定致力于一种简单形状云的实现。积云符合一般人对云的直觉。  
 
-相反，我们使用体积渲染一个环状空间。从技术上讲，透射必须合并背景大气，因此对Sky的调用成本会增加非常多。有时分为两个函数是有意义的。  
+现在我们使用体积渲染一个环状空间。从技术上讲，体积渲染必须合并背景大气，为了减少Sky函数的调用成本，有时分为两个函数是有意义的。例如，在考虑光照时仅使用不包含体积云的天空。  
 ```ruby
-∫all_line_dx|TS dx
-                    # Li随着深度衰减
-approximate S = βS*ρ ∫(C * T2)
-
-~= ρC ∫(T1βST2)dx
-
-# clamp((vec3(1.0) * phase * integral), vec3(0.0), vec3(1.0)) + sky * exp(-tmp_t);
+Lo = Cρ ∫all_line_dx|T(p)T2(p)βS(p)dx
 ```
 <div class="x gr txac">
   <div class="x la flex mg0">
-    <div class="x la item6-lg item12 pd0">
+    <div class="x la item5-lg item12 pd0">
       <img src="/assets/i/6-2.png">
     </div>
   </div>
   <p>图3：厚度为2.0的云层在特定太阳方向上的照明</p>
 </div>
 我们看到，这种算法很慢。且位于太阳视野外的云是全黑的，尽管这是有道理的，我们的场景天空较亮，除非我们只看向太阳。如果再考虑天空的贡献将导致该算法成本过高而不可用。  
+
+## 近似云
+我们可能期望找到一种更便宜的云。
 
 ## D. 
 ## 环境光遮蔽
