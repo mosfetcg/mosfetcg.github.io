@@ -62,7 +62,7 @@ tags: 场景
   <p>图3：孤零零的水方块</p>
 </div>
 
-<iframe src="https://editor.p5js.org/mosfet-archive/full/SkgyxJINS" width="740" height="740" class="x la dspln dsplb-md"></iframe>
+<iframe src="https://editor.p5js.org/mosfetcg-archive/full/SkgyxJINS" width="740" height="740" class="x la dspln dsplb-md"></iframe>
 
 ---
 ## SDF与电介质
