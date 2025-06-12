@@ -65,9 +65,6 @@ https://www.scratchapixel.com/lessons/3d-basic-rendering/volume-rendering-for-de
     <div class="x la item5-lg item12 pd0">
       <img src="/assets/i/7-1.png">
     </div>
-    <div class="x la item5-lg item12 pd0">
-       <img src="/assets/i/7-2.png">
-    </div>
   </div>
   <p></p>
 </div>

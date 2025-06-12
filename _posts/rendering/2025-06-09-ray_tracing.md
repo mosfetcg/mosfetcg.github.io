@@ -37,31 +37,31 @@ model for shaded display(1980)`，要求如下：
 ```cpp
 // Ray Tracing
 Whitted(ray) {
-  L = 0;
+  L = 0; // 程序层面：顶级堆栈父级评估的表达式，有时需要开始递归调用求解未知量(重用条件分支)，有时结束并归还给上一级使其评估
   if hit_any {
-    if that_is_specular_surface      // 发生镜面反射并递归求解更前的一个
+    if that_is_specular_surface      // 若为镜面反射，反射光线，结果未知
       return Whitted(_ray_);
-    else if light_not_shadowed       // 对于普通表面，检查遮挡并计算光照
-      L += scatteredIllumination;    // 表示要将光线弹射到光源，可使用简单的直接照明计算，递归结束，归还给上一级L(如果存在镜面)
+    else if light_not_shadowed       // 若为普通表面，检查遮挡并计算光照 
+      L += scatteredIllumination;    // 表示要将光线弹射到光源，可使用简单的直接照明计算，归还给上一级L并计入"总和"(如果存在镜面)
   }
   return L;
 }
 ```
-注意，命中普通对象会结束调用。在可反射路径上，会逐步累积各种光照值。  
+注意，命中普通对象会结束调用。在可反射路径上，会逐步传播此次结果。  
 
 **布林法(Blinn's Law)**  
 科技进步时，渲染时间不变。  
 As technology advances, rendering time remains constant.  
 
-`路径追踪(path tracing)`被称为一种"Random Walk"，根据渲染方程，其累积值为：  
-本质上，Le仅在最后随机命中发光表面(并不是绝对事件)出现一次计入。在归并时，路径上等待的反射率将其合并为自身的反射光，并提供给上一级，直到返回给初始调用。  
+`路径追踪(path tracing)`被称为一种"Random Walk"，根据渲染方程，其累积值为以下程序：  
+本质上，Le仅在最后随机命中发光表面(并不是绝对事件)出现一次计入。该代码的逻辑不完整，因为必须声明停止调用，通常遇到Le时，第二部分会被忽略并完成归还。该示例仅说明`L+=`的累积方式，因此，总和中的每个贡献量从光源到初始位置应呈现递减，除非反射率大于1。  
 ```cpp
 // Path Tracing
 PathTrace(ray) {
   L = 0;
   if hit_any {
-    L += add_surface_emission;
-    L += reflection * PathTrace(randomDirection());
+    L += add_surface_emission;                       // 1
+    L += reflection * PathTrace(randomDirection());  // 2
   }
   return L;
 }
@@ -97,7 +97,7 @@ BRDF Importance Sampling 根据BRDF采样。仅在对光源反射(前提仍然�
 ## 经典全局照明(Kajiya, 1986)
 不同文献导致了这一算法真正理解上的困难。有时错误的渲染结果也难以发现。  
 
-本质上，积分解决了物理上正确的半球四周光源的特定反射，即所谓的`Lo`。记住，`Lo/Li`只是对路径上辐射度在两侧不同上下文的不同称呼。对于命中初始光源的`Lo`才有可能贡献整条路径，这类发光表面(照明器)的输出等于`Le`项或者根本没有，无需任何积分计算，实践中此次评估的`Lo`不考虑其反射积分，否则需要反复出现求解积分。而对于其他间接表面，大多不发光，也不包含`Le`项，只是传递初始光线。  
+本质上，积分解决了半球环境照明的反射均值问题，即所谓的`Lo`。记住，`Lo/Li`只是对路径上辐射度在两侧不同上下文的不同称呼。对于命中初始光源的`Lo`才有可能贡献整条路径，这类发光表面(照明器)的输出等于`Le`项或者根本没有，无需任何积分计算，因为实践中此次评估的`Lo`不考虑其反射积分，否则需要反复出现求解积分。而对于其他间接表面，大多不发光，也不包含`Le`项，只是传递初始光线。  
 因此，算法通常包含到达发现`Le`中止的必要条件，无论从递归还是迭代形式分析都可以得到类似的理解。迭代中，按照相机出发反向查询最方便，可令`Le/Lo/Li`的预计值由`1.0`预留占位，由于当最后被乘以`Li = Lo = Le`时，可以理解到只是延迟了`Li`需要未知值赋值的影响。  
 上面这段话，可以验证通常做法与渲染方程的正确匹配性。以避免明显错误。  
 
@@ -133,7 +133,7 @@ col -= dcol * rad_li; // 取消直接贡献
       <img src="/assets/i/10-1.png">
     </div>
   </div>
-  <p>图1：路径追踪 - 方法1 目标场景参考：https://en.wikipedia.org/wiki/Global_illumination#</p>
+  <p>图1：路径追踪 - 方法1[<a href="https://en.wikipedia.org/wiki/Global_illumination" title="">场景参考</a>]</p>
 </div>
 
 #### Partitioning The Rendering Equation
