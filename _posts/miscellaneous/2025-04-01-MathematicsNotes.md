@@ -144,3 +144,12 @@ dot(v1,v2) = 0 = x1x2+y1y2;
                  x1x2  = -y1y2
                  x2/y2 = -y1/x1  # 斜度互为反倒数
 ```
+
+## 一般计算
+```ruby
+# dist from point to line
+solved by proj and line expression(all points are known)
+
+# perp point from point to line
+solved by proj and line expression(all points are known)
+```
