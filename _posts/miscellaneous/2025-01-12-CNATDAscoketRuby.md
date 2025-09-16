@@ -1,6 +1,6 @@
 ---
 layout: page
-title:  "计网2.7套接字示例(Ruby版本)"
+title:  "简单套接字"
 author: mosfet
 category: miscellaneous
 tags: 计算机科学 计算机网络

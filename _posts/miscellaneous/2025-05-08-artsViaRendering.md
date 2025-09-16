@@ -3,7 +3,7 @@ layout: page
 title:  "启发艺术创作"
 author: mosfet
 category: miscellaneous
-tags: 艺术 像素画 创作 抽象启发
+tags: 艺术 像素画 创作 启发
 ---
 
 ## 学习像素艺术理论
