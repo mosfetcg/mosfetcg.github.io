@@ -48,7 +48,7 @@ for (float i = 0.0; i < MAX; i++) {
   <p>图1：经典图形和轨道捕获</p>
 </div>
 
-<iframe src="https://editor.p5js.org/mosfetcg-archive/full/kkvG7wXdz" width="620" height="700" class="x la dspln dsplb-md"></iframe>
+<iframe src="https://editor.p5js.org/moscg-archive/full/kkvG7wXdz" width="620" height="700" class="x la dspln dsplb-md"></iframe>
 
 ## 曼德尔球
 曼德尔球是一种三维分形，由朱尔斯·鲁伊斯于1997年首次构建，并由丹尼尔·怀特和保罗·尼兰德于2009年使用球面坐标进一步发展。标准的三维曼德布洛特集并不存在，因为二维复数空间没有三维类似物。
@@ -178,7 +178,7 @@ return 0.25 * log(m) * sqrt(m) / dz;
   <p>图4：使用近似距离的高效渲染</p>
 </div>
 
-<iframe src="https://editor.p5js.org/mosfetcg-archive/full/uf6IlIdml" width="700" height="750" class="x la dspln dsplb-md"></iframe>
+<iframe src="https://editor.p5js.org/moscg-archive/full/uf6IlIdml" width="700" height="750" class="x la dspln dsplb-md"></iframe>
 
 ## REFS
 ```plain
