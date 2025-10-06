@@ -16,7 +16,7 @@ cs348b: Image Synthesis Techniques
 高级直接照明 - lectrue11
 经典全局照明 - lectrue12, focg23
 
-1✅ 如下
+1✅ 如下                 LOCKED 10.6
 4,5,6,7✅ 无参考
 10✅ 直接照明  无参考
 11✅ 直接照明2 如下
@@ -24,16 +24,18 @@ cs348b: Image Synthesis Techniques
 ```
 
 ## 光线追踪
-最初与光线相关的渲染算法可追溯到`Ray casting(Appel-1968)`：  
+最初与光线追踪相关的渲染算法可追溯到`Ray casting(Appel-1968)`：  
 ①每像素发出**一条**光线用于寻找对象。  
 ②在表面另向光源发出**一条**阴影光线检查照明贡献。  
-我们容易找到几个如今熟悉的概念，如shadowRay、光源、Scene Object，相机投射的光线称为view ray。  
-两条主要光线被分别用于计算场景对象可见性和照明，现代理论中通常将此类算法划分到更大集合——图像顺序渲染，因其典型的迭代方式。  
 
-之后，T. Whitted写了一篇改进照明模型的论文`An improved Illumination
-model for shaded display(1980)`，要求如下：  
+现代术语中这两个过程的目的称为可见性和着色(照明和阴影模型)。由两条主要光线分别完成。这种算法也被划为图像顺序渲染类型，因其典型的迭代方式。  
+几个如今熟悉的概念在这里已经存在或揭示，如shadowRay、光源、Scene Object，相机投射的光线称为view ray。现在我们可能习惯更明确的方式定义它们。  
+
+接下来一个的主要改进来自于`An improved Illumination
+model for shaded display(Whitted-1979)`。  
+Whitted对追踪器的主要改动如下：  
 ①除了镜子和玻璃，否则总是向光源发送阴影光线。  
-②为镜子和玻璃，递归生成新光线。  
+②为镜子和玻璃等表面，递归生成新镜面反射光线。  
 ```cpp
 // Ray Tracing
 Whitted(ray) {
@@ -47,14 +49,9 @@ Whitted(ray) {
   return L;
 }
 ```
-注意，命中普通对象会结束调用。在可反射路径上，会逐步传播此次结果。  
+核心要点是区分命中镜面时发生反射，而命中普通对象会结束调用。在反射路径上，会逐步传播最后的结果。  
 
-**布林法(Blinn's Law)**  
-科技进步时，渲染时间不变。  
-As technology advances, rendering time remains constant.  
-
-`路径追踪(path tracing)`被称为一种"Random Walk"，根据渲染方程，其累积值为以下程序：  
-本质上，Le仅在最后随机命中发光表面(并不是绝对事件)出现一次计入。该代码的逻辑不完整，因为必须声明停止调用，通常遇到Le时，第二部分会被忽略并完成归还。该示例仅说明`L+=`的累积方式，因此，总和中的每个贡献量从光源到初始位置应呈现递减，除非反射率大于1。  
+`路径追踪(path tracing)`被称为一种"Random Walk"，根据渲染方程，其累积值类似为以下程序：  
 ```cpp
 // Path Tracing
 PathTrace(ray) {
@@ -66,6 +63,11 @@ PathTrace(ray) {
   return L;
 }
 ```
+如果不是直接命中光源，Le仅在最后随机命中发光表面(并不是绝对事件)出现一次计入。另外，该代码的逻辑不完整，因为必须声明停止调用，通常遇到Le时，第二部分会被忽略并完成归还。该示例仅说明`L+=`的累积方式，因此，总和中的每个贡献量从光源到初始位置应呈现递减，除非反射率大于1。  
+
+**布林法(Blinn's Law)**  
+科技进步时，渲染时间不变。  
+As technology advances, rendering time remains constant.  
 
 ## 高级直接照明
 #### 环境纹理光源(Environment Map Lights)
