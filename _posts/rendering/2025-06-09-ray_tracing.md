@@ -13,12 +13,12 @@ tags: 渲染 全局照明 路径追踪
 cs348b: Image Synthesis Techniques
 
 光线追踪 - lecture1,2
-高级直接照明 - lectrue11
+高级直接照明 - lectrue10,11
 经典全局照明 - lectrue12, focg23
 
-1✅ 如下                 LOCKED 10.6
+1✅ 如下
 4,5,6,7✅ 无参考
-10✅ 直接照明  无参考
+10✅ 直接照明  如下
 11✅ 直接照明2 如下
 12✅ 全局照明  如下
 ```
@@ -71,25 +71,28 @@ PathTrace(ray) {
 As technology advances, rendering time remains constant.  
 
 ## 高级直接照明
+本节主要根据材料对渲染方程中的密度选择实践做了一些总结。  
+我们可以为到来的随机样本分配不同配重而不再是均匀密度产生一些"强调内容"，有时这种强调是必要的，尤其是均匀生成采样以及均匀的效果不一定是物理上正确的，我们可以分析出新的密度函数并坚持使用简单的均匀产生样本程序，这称为重要性采样。  
+例如，在一个简单的直接照明采样中，半球方向(任意)和锁定光源的面积方程你使用哪个？除非前者带有指向灯光的有效PDF，否则效果达不到后者的完美采样，因为每一次采样都直接有效(对于我们的目标)。注：或者使用方向采样时，只生成灯光线，但这违背了均匀生成的初衷，另外方向采样也有可能优于面积，它对球体正前方的采样空间更宽，效果也许更好。我们把这个问题留给读者思考。  
+
 #### 环境纹理光源(Environment Map Lights)
-很容易使用纹理构成的环境光源，处理不同区域亮度差异的采样时(作为光源)，而不是均匀使用PDF，需要进一步考虑问题。  
+用户很容易想要从环境光源(纹理图)当作光源，但最好根据亮度生成PDF进一步考虑问题，我们可能称之为环境光源的重要性采样。  
 另外，一起使用环境和单独光源时，也需要注意实现上的区别，但这里并不是关注此问题。  
 
-#### MIS(Multiple Importance Sampling)
-Uniform Light Sampling 以均匀的概率对所有光源进行采样。对更重要的光源情况不好。  
-Light Importance Sampling 顾名思义，对能量更高、近的光源分配更多，和前者相反。  
-BRDF Importance Sampling 根据BRDF采样。仅在对光源反射(前提仍然是光源采样)最强的地方贡献最多。  
+#### 多重重要性采样(MIS, Multiple Importance Sampling)
+现在我们仍然只讨论直接光照采样的情况。  
+Uniform Light Sampling 通常情况都不好！除非亮度相近且充满世界。例如天空。  
+Light Importance Sampling 重要光源偏向。使其脱颖而出。  
+BRDF Importance Sampling BRDF强度优先采样。这是自然的，因为采样那些有效视觉区域更好。  
 
-注：BSDF(Bidirectional Scattering Distribution Function)比BRDF多折射率信息，就是平时用的那些。  
-
-示例策略：Average of Light + BSDF Sampling。  
-
-使用多个重要样本和pdf平均每个样本。  
+我们也可以反过来思考这些问题，只在光源采样可能不匹配BRDF，只在BRDF采样可能不会命中光源。  
+MIS指出，在每次迭代中，评估多个积分项，每个项都是单独的重要密度以及光线传输，并将它们结合起来，数学上这是：  
+而然我们可以通过该配重的概率单独采样一条(规则)，以交替方式实现，因此MIS不意味着一定一次多重混合积分。  
 ```
 ~= 1/N [Σw1f/p1 + Σw2f/p2+...]
 ```
 
-#### Splitting(分裂积分器)
+#### 分裂积分器(Splitting)
 略；  
 
 #### 多光采样(Many-Light Sampling)
