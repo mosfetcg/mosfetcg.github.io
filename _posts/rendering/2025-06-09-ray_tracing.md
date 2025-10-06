@@ -103,32 +103,29 @@ MIS指出，在每次迭代中，评估多个积分项，每个项都是单独�
 ## 经典全局照明(Kajiya, 1986)
 不同文献导致了这一算法真正理解上的困难。有时错误的渲染结果也难以发现。  
 
-本质上，积分解决了半球环境照明的反射均值问题，即所谓的`Lo`。记住，`Lo/Li`只是对路径上辐射度在两侧不同上下文的不同称呼。对于命中初始光源的`Lo`才有可能贡献整条路径，这类发光表面(照明器)的输出等于`Le`项或者根本没有，无需任何积分计算，因为实践中此次评估的`Lo`不考虑其反射积分，否则需要反复出现求解积分。而对于其他间接表面，大多不发光，也不包含`Le`项，只是传递初始光线。  
+本质上，渲染方程解决了BSDF在半球环境照明的反射到眼睛(即所谓的`Lo`)的单次问题。  
+
+基于路径追踪的，精确的全局照明方案更关注路径搜索的完全过程以及每个Li是如何具体定义了照明方式的形式。最终结论可能是没有明确结论。将照明和路径追踪的概念分开也许有利于得到对渲染的高级理解。  
+路径追踪设想的理想照明是，Li是通过**光源**一路反射到达最终半球的。我们先假设这成立，以该方式说明方程，`Lo/Li`只是对路径上辐射度在两侧不同上下文的不同称呼。对于命中初始光源的`Lo`才有可能贡献整条路径，这类发光表面(照明器)的输出等于`Le`项或者根本没有，无需任何积分计算，因为实践中此次评估的`Lo`不考虑其反射积分，否则需要反复出现求解积分。而对于其他间接表面，大多不发光，也不包含`Le`项，只是传递初始光线的照明。  
 因此，算法通常包含到达发现`Le`中止的必要条件，无论从递归还是迭代形式分析都可以得到类似的理解。迭代中，按照相机出发反向查询最方便，可令`Le/Lo/Li`的预计值由`1.0`预留占位，由于当最后被乘以`Li = Lo = Le`时，可以理解到只是延迟了`Li`需要未知值赋值的影响。  
-上面这段话，可以验证通常做法与渲染方程的正确匹配性。以避免明显错误。  
+~~上面这段话，可以验证通常做法与渲染方程的正确匹配性。以避免明显错误。~~  
 
-#### Energy Balance(能量守恒理论)
-不变性(accountability)：系统中放入的能量等于离开的能量，通常通过热。  
-```ruby
-outgoing - incoming = emit - absorb
-                    = emit + incoming - absorb
-reflected = incoming - absorb # 反射 = 入 - 吸收
-outgoing  = emit + reflected
+再次提醒，我们没有明确下结论这就是通用的形式。用户可能使用随意的追踪以及设置了最大固定次数上限并错过光源导致错误的渲染，因此仅在符合理想照明(必定命中光源)时使该方案变得有用。错过光源的追踪大多数是嘈杂且错误的。除非你不可能错过它们，或者理解了正确的采样方式。  
 
-Lo = Le + Lr = Le + ∫Li
-```
+#### 未命中光源的嘈杂解释
+由于很难在有限时间内命中所谓的`Le`，导致每条路径的贡献都是狭小且奇怪的。这些样本仍被记录！(和缝隙中的遮蔽样本相同的效果)  
+如果场景中只有一个很小的灯具，大多数对象很难根据BRDF"最终"命中它，产生链式反应，由于所有表面都少接受照明，整体画面非常暗。  
 
-#### 问题
-尽管全局照明的核心问题已被解决，但通常的渲染方程并非最终有用，除非使用大型灯具或大量样品，否则将导致非常嘈杂的图像。  
-这是因为，大多情况下，很难随机命中所谓的`Le`，导致每条路径的贡献都是狭小的。  
-如果场景中只有一个很小的灯具，则很难"最终"命中它，产生链式反应，由于所有表面都少接受照明，整体画面非常暗。  
+这不符合现实，光源发送更多的光和频率，而且至少直接照亮整个正面，而不是让表面自己尝试命中它(否则是黑暗的)。  
+你或许发现问题主要集中在漫射等材料随机散射的问题上，因为漫射材料在场景中的照明基本充当二次光源。  
 
-这不符合现实，光源发送更多的光和频率，至少应该直接照亮整个正面，而不是让表面自己尝试命中它(否则是黑暗的)。  
-已经开发出有多种强力路径追踪技术的抽象方式来改变这一情况。  
+真正的全局照明需要更好的抽象方式。本文我们的目的是分析这些问题的根本原因，以便理解各种方案的原理。  
 
-#### 方法1
+#### 方法1(globillum.18、43)
 首先，在每个散射点额外采样一次直接光的结果`dcol`，新建一个变量，持续在路径上累积`col += dcol * rad_li;`直到Li命中Le。  
-这种做法不仅可以完全保持独立的路径追踪过程，也考虑了结果中直接光对路径上的累积影响。  
+这首先累计了该表面干净的直接光照，因为第一次`rad_li = 1.0`，随后间接光照通过完全一致的路径追踪开始捕获。  
+你惊奇的发现，如果错过，它只是不产生更多间接光照，而不会导致非常错误的图像。  
+
 但要注意，取消非漫射材料受到的直接光影响，因为在这一点上只是反射、折射，而不增加光。  
 ```cpp
 col -= dcol * rad_li; // 取消直接贡献
@@ -139,43 +136,23 @@ col -= dcol * rad_li; // 取消直接贡献
       <img src="/assets/i/10-1.png">
     </div>
   </div>
-  <p>图1：路径追踪 - 方法1[<a href="https://en.wikipedia.org/wiki/Global_illumination" title="">场景参考</a>]</p>
+  <p>图1：方法1结果[<a href="https://en.wikipedia.org/wiki/Global_illumination" title="">场景灵感来源</a>]</p>
 </div>
 
-#### Partitioning The Rendering Equation
+这通过以下重新解释方程的方式表达：  
+最终半球的直接照明在第一次就评估，而间接部分开始递归求解(并包含其直接部分)。该渲染方程(43)符合上述累积方程。  
+```ruby
+# treat Li as Lid Lii (Partitioning)
+Lo = Le + ∫Lid + ∫Lii
 ```
-Li = Lid + Lii
-对于Lid，Sample lights+BRDFs, use MIS
-对于Lii，递归求解Lo = Le + ∫Lid + ∫Lii
-```
-`Russian Roulette`基于概率p中止路径，以`1/1-q`缩放贡献。  
+
+##### Russian Roulette
+俄罗斯轮盘赌概率性地终止光路，有助于减少计算量。  
+基于概率`p`中止路径，存活的光路`1/(1-q)`缩放贡献。  
 ```cpp
-Spectrum PathLo(Ray ray) {
-  BSDF bsdf = isect.GetBSDF();
-  Spectrum Ld = DirectLighting(bsdf, wo);
-  Spectrum fr = bsdf.Sample_f(wo, & wi, & pdf);
-  return (depth == 0 ? isect.Le(wo) : 0.) + Ld +
-    fr * PathLo(Ray(isect.P, wi)) * Dot(wi, isect.N) / pdf;
+float survivalProb = clamp(dcol.max(), 0.1, 1.0);
+if (rand() > survivalProb) {
+    break; // terminate path
 }
-
-Spectrum PathLo(Ray ray) {
-  Spectrum Lo = 0, beta = 1;
-  while (true) {
-    if (depth == 0) Lo += isect.Le(wo);
-    BSDF brdf = isect.GetBSDF();
-
-    Lo += beta * DirectLighting(bsdf, wo);
-
-    Spectrum fr = bsdf.Sample_f(wo, &wi, &pdf);
-    beta *= fr * Dot(wi, isect.N) / pdf;
-  }
-  return Lo;
-}
-// 存在问题
-// 度盘
-// P(choosing wi |not_terminating) P(not terminating)
-    float q = 0.25;
-    if (randomFloat() < q) break;
-    else beta /= (1-q);
+dcol /= survivalProb; // scale to keep estimator unbiased
 ```
-改进Russian Roulette。略。  
