@@ -337,25 +337,6 @@ Lo = Cρ ∫all_line_dx|T(p)T2(p)βS(p)dx
 我们可能期望找到一种更便宜的云。
 
 ## D. 
-## 环境光遮蔽
-环境光遮蔽用于计算更好的环境着色。它的结果模拟了表面处于环境光中曝光后的阴影。  
-符合环境光源定义的通常是天空，最后乘以该遮挡。  
-
-遮蔽值描述了这样一种情况，对于特定表面光线可能在许多方向上被其他表面遮挡，遮挡越多，该地区就越闭塞，使得它们在环境光的照明下越少。  
-```cpp
-float ambient_occlusion( in vec3 p, in vec3 n, in float maxDistance, in float falloff) {
-  float ao = 0.0;
-  const int samples = 4;
-
-  for (int i = 0; i < samples; i++) {
-    float move_off = random(float(i)) * maxDistance;
-    vec3 direction = n * move_off;
-    ao += (move_off - max(scene(p + direction), 1.0)) / maxDistance * falloff;
-  }
-  return clamp(1.0 - ao / float(samples), 0.0, 1.0);
-}
-```
-
 ## 便宜的雾
 实际上，雾比我们大多数人认为的更普遍。大多数情况下，空气中都有一定程度的阴霾。即使只有少量，我们也可以通过引入雾气来增强室外场景的现实主义。  
 除了使用参与介质，存在多种模拟雾的模型。即使是非常简单的方法也可以有效。  

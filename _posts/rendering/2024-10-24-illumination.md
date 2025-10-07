@@ -8,6 +8,24 @@ tags: 照明
 给定一组对象和基本渲染方式(图像/对象)，如何选择合适的照明技术？  
 由于两种对象的可访问性不同，并不能使同一种照明策略都生效，已经有多种事实说明这一点，例如，PBR在光栅中仅能被粗略近似。因此，这些技术必须按这一点进行分类，本文期望对每一种构建一些良好的直觉，最后构建出通常情况下都足够真实可信的照明。  
 
+## 环境光遮蔽
+尽管环境光遮蔽(AO)常常被列为近似GI的一种方法。而然这并不是GI。可见人们对此的定义可能是提供了类似GI的部分表现的特定功能。  
+```cpp
+float ambient_occlusion( in vec3 p, in vec3 n, in float maxDistance, in float falloff) {
+  float ao = 0.0;
+  const int samples = 4;
+
+  for (int i = 0; i < samples; i++) {
+    float move_off = random(float(i)) * maxDistance;
+    vec3 direction = n * move_off;
+    ao += (move_off - max(scene(p + direction), 1.0)) / maxDistance * falloff;
+  }
+  return clamp(1.0 - ao / float(samples), 0.0, 1.0);
+}
+```
+AO来自于这样一个事实，互相遮蔽的表面暴露在恒定环境光中将产生特定的阴影，遮蔽值对此衰减进行测量。对于特定表面，光线可能在许多方向上被其他表面遮挡，遮挡越多，该地区就越闭塞，使得它们在环境光的照明下越少。  
+这当然不是实现GI反射的技巧，在完整的GI模拟中，闭塞处会自然被阴影。AO期望查找与此类似的表现。  
+
 <!-- ## 近似全局照明
 大型户外场景、典型的游戏场景中，大多数光来自于强烈的第一光源——太阳，并产生锐利的影子。  
 除此之外天空可以作为环境光源并计算环境着色(AO)作为补充。  
