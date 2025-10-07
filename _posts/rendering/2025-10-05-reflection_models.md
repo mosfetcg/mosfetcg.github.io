@@ -3,7 +3,7 @@ layout: page
 title:  "反射模型"
 author: mosfet
 category: rendering
-tags: 渲染 全局照明 路径追踪
+tags: 路径追踪 材料 BRDF
 ---
 
 <style>code:not(pre code) {color:green!important}</style>
