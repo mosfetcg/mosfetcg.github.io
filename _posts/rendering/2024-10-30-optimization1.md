@@ -57,7 +57,7 @@ p(r,θ) = r/Pi = p(r)p(θ)
 p(θ) = 1/2Pi  && P^-1 = 2PIξ1
 p(r) = 2r     && P^-1 = sqrt(ξ2) # *R  ?
 ```
-**Marginal Density Functions(14.4)**  
+**Marginal Density Functions**  
 ```ruby
 # 5-41
 # sampling triangle?
@@ -69,6 +69,13 @@ p(x)   = ∫p(x,y)dy  # marginal  DF
 p(y|x) = p(x,y)/p(x)# condition DF
 # check examples in 5-43!
 ```
+```ruby
+# 14.4.1
+P = ∫∫p(θ,φ)sinθdθdφ     # sinθ由dσ引入
+Pol = acos((1-ξ1)^1/n+1) # 通常指数中n=1
+Azi = 2Piξ2
+dir = ... eval polar
+```
 
 #### 拒绝方法
 拒绝方法：圆内点，单位方向等(14.4.2, 5-34 etc)。  
@@ -76,7 +83,7 @@ p(y|x) = p(x,y)/p(x)# condition DF
 #### Metropolis(14.4)
 
 #### 自然的度量
-选择"自然"的度量可能是棘手的部分(14.1.2)：子度量`du = d * ...`的点集不应该随着该测量单位的空间系变换而改变结果。  
+(请无视)选择"自然"的度量可能是棘手的部分(14.1.2)：子度量`du = d * ...`的点集不应该随着该测量单位的空间系变换而改变结果。  
 
 ---
 ## 参考1
