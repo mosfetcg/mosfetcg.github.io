@@ -51,9 +51,11 @@ AreaProject = cosθdσ
 # 5-30
 # dθ小圆弧(在特定r上)，dr环距，同样以下假设r = 1
 A_measure = ∫∫r0..1|rdrdθ = Pi if maxR =1  # 0..1|r²/2 * [2Pi]
-prob   = p(r,θ)drdθ = (1/PI)rdrdθ
+prob   = p(r,θ)drdθ = (1/PI)rdrdθ  
+# pdu = 1/A * rdu 
+# 注解：左侧是特定du概率，右侧是实际矩形 被均分为PI份。可能有道理。即概率 = 均分面积的表达式？
 p(r,θ) = r/Pi = p(r)p(θ)
-
+# use marginal pdf to get
 p(θ) = 1/2Pi  && P^-1 = 2PIξ1
 p(r) = 2r     && P^-1 = sqrt(ξ2) # *R  ?
 ```
@@ -75,6 +77,29 @@ P = ∫∫p(θ,φ)sinθdθdφ     # sinθ由dσ引入
 Pol = acos((1-ξ1)^1/n+1) # 通常指数中n=1
 Azi = 2Piξ2
 dir = ... eval polar
+```
+
+#### 球位系均匀逆方法
+```ruby
+# 我们之前已经证明平面单位圆极系的PDF，那么球呢，必须满足
+∫sphere|pdσ = 1  => 1/4PI sindxdy => p(x,y) = sinθ/4pi
+# 为了得到方位角，使用margin，这只是
+p(φ) = (2) * 1/4pi = 1/2pi
+# 为了得到polar，使用margin，这只是
+p(θ) = sinθ/2
+```
+
+#### cone
+```ruby
+# spherical luminaire/ cone sampling
+dist = len(c-x)
+sinα = R/d or cosα = sqrt(1 - sinα²)  # α最大半边角度 α = asin/ acos
+# 均匀密度
+q = 1/ 2Pi(1-cosα)
+cosθ = 1-ξ1+ξ1cosα                    # 确定后，可知uvw中的采样位置
+   φ = 2PIξ2
+q = p(x2)cosθ2 / len(x, x2)           # 球面上的点
+p(x2) = cosθ2 / 2PIlen(x,x2)(1-cosα)
 ```
 
 #### 拒绝方法
