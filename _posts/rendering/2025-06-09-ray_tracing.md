@@ -93,17 +93,31 @@ As technology advances, rendering time remains constant.
 
 #### 多重重要性采样(Multiple Importance Sampling)
 为了实现最佳光采样(减小物理设计偏差)，通常分析特定因子并导出一种抽样策略，如根据材料反射率，重要光源，或者只是一般的均匀环境光策略等等。  
-从每种策略抽取样本并平均的简单方式会引入方差，MIS方法的目的是尽可能仍然符合真正的形状：从每种策略抽选样本并精心配重，消除该问题。  
-多策略相加估值器的数学表示如下(27)，如前所述，设置均分的效果不好，除非我们认为得到的任何样本与函数匹配，并根据这个来配重它，MIS平衡启发式算法如下：  
+若从每种技术策略抽取样本并最后平均的简单方式会引入方差，引入MIS是为了智能地分析更匹配形状的技术样本并为其正确分配配重，从而消除此类影响。首先，一般来说，多策略样本的估值器如下所述：  
 ```ruby
+# 27
 # https://www.pbr-book.org/4ed/Monte_Carlo_Integration/Improving_Efficiency#MultipleImportanceSampling
 pn: pa pb...    # 多种分布的估值器
-EST = wa(dua) * fdua/pa(dua) + ... dub
-# w之和为1，如果pdfn为0，则wn为0
+EST [ wa(dua)*fdua/pa(dua) + wb(dub)fdub/pb(dub) + ... ]
+# 估值正确的配重函数条件是：Σw = 1 && if pn=0 then wn = 0
 
+# 如前所述，设置均分的效果不好。
+wn = 1/n_total
+
+# MIS平衡启发式算法如下，其目的是使较为匹配的技术具有相对更大的配重
 # balance heuristic
 wn = pn(du) / Σa..j|pj(du)
+
+# 对于两个策略的估值器
+fdua / (pa(dua) + pb(dua)) +
+fdub / (pa(dub) + pb(dub))
 ```
+即使没有从所有分布中采样，也可以应用多重重要性采样。这种方法称为单样本模型。其中，`qn`是选择该策略的概率。对于单样本模型，平衡启发式被证明是最优的。  
+```ruby
+(wn(du)/qn) * (fdu/pndu)
+```
+
+**MIS补偿**。  
 
 #### 环境采样(Environment Map Lights)
 根据环境图亮度导出抽样策略。  
