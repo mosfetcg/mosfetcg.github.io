@@ -14,8 +14,11 @@ tags: 全局照明 优化
     <div class="x la item3-lg item12 pd0">
       <img src="/assets/i/4-1.png">
     </div>
+    <div class="x la item3-lg item12 pd0">
+      <img src="/assets/i/4-2.png">
+    </div>
   </div>
-  <p>Mix density method</p>
+  <p>Mixture Densities -method</p>
 </div>
 
 初见本书介绍的方法(所谓的**密度混合**)似乎会觉得不可思议。实际上这印证了我们之前对渲染正确性思考的想法。在这个术语中，重要性采样指的是将光线散射到您认为的重要区域，
