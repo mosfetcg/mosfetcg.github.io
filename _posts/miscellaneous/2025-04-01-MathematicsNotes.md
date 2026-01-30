@@ -67,32 +67,6 @@ b = df/ds(x)*ds
 
 ---
 # Ⅱ. 向量
-## 实用结论
-这些是对原始处理的线性代数内容进一步**实用性**推导，您可以在应用中反复通过**基础**推导它们，但为了这些结论使用方便，我们放在这里。  
-```ruby
-# 要获取投影向量，请将投影长度 * 被投影向量的单位向量
-hypo = a, cosC = adj/a
-
-      dot = len(a)len(b)(adj/a)
-proj_atob = dot/len(b)
-   v_proj = proj_atob * norm(b)
-
-# 已知向量proj时，可以从它们的三角形获得对边向量(垂线)
-v_perp_atob = a - v_proj
-# 类似的投影运算(以向量为目的)，也可以以变换进行表达
-v_proj = 1/len(b)²A*[a]
-
-# 计算a,b三角形的面积
-a X b = parallelogram_area(a,b)
-triangle_area = 0.5 * a X b;
-
-# 另一种右手示意规则：4指为a, 手心为b，拇指为结果。
-
-# cross的变换形式：
-a X b =  0   -a.z  a.y
-         a.z 0    -a.x * b
-        -a.y a.x   0
-```
 ## 向量角度形式
 ```ruby
 (3)Magnitude & direction    -> ||v||, angle
