@@ -176,6 +176,28 @@ sign(i,j) = -1^(i+j)
 # det由一系列积组成，每个在图形上对应一些矩阵上的斜线元素
 ```
 
+## 判别式2和倒转
+非常可选。  
+```ruby
+det(B) = k^n det(A)        # for each Br= Ar*=k row, n row total.
+det(X)+det(Y)=det(Z)       # identical X,Y,Z except for only one row you have Ar + Br = Cr
+det(Aij) = -det(A)         # Aij swap the i,j row of A
+det(Aij) = det(A)          # Aij, in row j, let Arj = Arj - cAri of A
+# upper/lower triangular matrix 对角一侧全为0，即上下三角形矩阵(上：右上有值)
+det(Aup) = a11a22...ann
+# 三角化简判别式。按照对角元素顺序用上述技巧进行简化，直到获得对角值。注意三角化不是rref!
+```
+
+`倒转(transpose)`记为`A^T/AT`。对原矩阵交换行列向量。实用属性如下。非常可选。  
+```ruby
+det(AT) = det(A)
+(AB)^T  = B^T * A^T
+(A+B)^T = A^T + B^T  # 可用于 (A^T)^-1 = (A^-1)^T
+# dot(v^T, w) = v^T w  略，不要使用
+# Rowspace C(AT) left nullspace N(AT) 略，不要使用 
+# ... 7末尾略。
+```
+
 ---
 # Ⅲ. 向量
 ## 向量角度形式
