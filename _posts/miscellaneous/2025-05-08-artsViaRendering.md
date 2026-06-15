@@ -1,12 +1,11 @@
 ---
 layout: page
-title:  "启发艺术创作"
+title:  "像素画"
 author: mosfet
 category: miscellaneous
-tags: 艺术 像素画 创作 启发
+tags: 像素画
 ---
 
-## 学习像素艺术理论
 ```
 https://pixeljoint.com/forum/forum_posts.asp?TID=11299
 ```

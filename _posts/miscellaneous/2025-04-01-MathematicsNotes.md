@@ -1,6 +1,6 @@
 ---
 layout: page
-title:  "数学薄记"
+title:  "3D数学薄记"
 author: mosfet
 category: miscellaneous
 tags: 数学 微积分
