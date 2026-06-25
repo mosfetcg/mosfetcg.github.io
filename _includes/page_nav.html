@@ -1,5 +1,14 @@
 {% assign cat = page.categories[0] %}
-{% assign cat_list = site.categories[cat] %}
+{% assign raw_cat_list = site.categories[cat] %}
+{% comment %} 1. 先根据环境过滤出有效的文章列表 {% endcomment %}
+{% assign cat_list = "" | split: "," %}
+{% for post in raw_cat_list %}
+{% if jekyll.environment == "production" and post.tags contains 'hidden' %}
+{% continue %}
+{% endif %}
+{% assign cat_list = cat_list | push: post %}
+{% endfor %}
+{% comment %} 2. 使用过滤后的纯净列表计算上下篇（原逻辑保持不变） {% endcomment %}
 {% for post in cat_list %}
 {% if post.url == page.url %}
 {% assign pOffset = forloop.index0 | minus: 1 %}
