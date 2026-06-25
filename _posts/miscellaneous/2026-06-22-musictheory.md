@@ -3,11 +3,10 @@ layout: page
 title:  "乐理"
 author: mosfet
 category: miscellaneous
-tags: unpublish 音乐
-published: true
+tags: hidden 音乐
 ---
 
-此文件仅作备份而不进行编辑。2026年6月13日，15:30:33
+此文件目前仅上传作备份。2026年6月13日，15:30:33
 
 ```ruby
 音符            note
