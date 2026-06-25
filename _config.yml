@@ -1,30 +1,26 @@
-# Welcome to Jekyll!
+# 欢迎来到 Jekyll!
 #
-# This config file is meant for settings that affect your whole blog, values
-# which you are expected to set up once and rarely edit after that. If you find
-# yourself editing this file very often, consider using Jekyll's data files
-# feature for the data you need to update frequently.
+# 此配置文件用于影响整个博客的设置，您应该设置一次并且之后很少编辑的值
+# 如果您发现自己经常编辑此文件，请考虑使用Jekyll的数据文件功能来处理您需要经常更新的数据
 #
-# For technical reasons, this file is *NOT* reloaded automatically when you use
-# 'bundle exec jekyll serve'. If you change this file, please restart the server process.
+# 由于技术原因，当您使用“bundle exec jekyllserve”时，
+# 该文件*不会*自动重新加载。如果更改此文件，请重新启动服务器进程
 #
 # If you need help with YAML syntax, here are some quick references for you:
 # https://learn-the-web.algonquindesign.ca/topics/markdown-yaml-cheat-sheet/#yaml
 # https://learnxinyminutes.com/docs/yaml/
 #
 # Site settings
-# These are used to personalize your new site. If you look in the HTML files,
-# you will see them accessed via {{ site.title }}, {{ site.email }}, and so on.
-# You can create any custom variable you would like, and they will be accessible
-# in the templates via {{ site.myvariable }}.
+# 这些用于个性化您的新站点。如果您查看HTML文件，您将看到它们是通过
+# {{ site.title }}、{{ site.email }} 等访问的
+# 您可以创建任何您想要的自定义变量，并且可以通过{{ site.myvariable }}在模板中访问它们
 
 title: DSAT(DigitalShadingArt&Tech)
-email: xeno.server@outlook.com
+email: xeno.service@outlook.com
 description: >- # this means to ignore newlines until "baseurl:"
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
-twitter_username: mosfet
-github_username:  mosfet
+myvariable: nothing
 
 # Build settings
 theme: 
