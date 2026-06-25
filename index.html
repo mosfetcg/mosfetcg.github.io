@@ -16,6 +16,9 @@ include_p5: true
                 <h3 class="category-name x-noselect x sk tx-main1">隐式建模~></h3>
                 <div class="cate-list">
                     {% for post in site.categories.modeling %}
+                    {% if jekyll.environment == "production" and post.tags contains 'hidden' %}
+                    {% continue %}
+                    {% endif %}
                     <p><a href="{{ post.url }}">{{ post.title }}</a></p>
                     {% endfor %}
                 </div>
@@ -24,6 +27,9 @@ include_p5: true
                 <h3 class="category-name x-noselect x sk tx-main1">场景~></h3>
                 <div class="cate-list">
                     {% for post in site.categories.scene %}
+                    {% if jekyll.environment == "production" and post.tags contains 'hidden' %}
+                    {% continue %}
+                    {% endif %}
                     <p><a href="{{ post.url }}">{{ post.title }}</a></p>
                     {% endfor %}
                 </div>
@@ -33,6 +39,9 @@ include_p5: true
                 <h3 class="category-name x-noselect x sk tx-main1">渲染~></h3>
                 <div class="cate-list">
                     {% for post in site.categories.rendering %}
+                    {% if jekyll.environment == "production" and post.tags contains 'hidden' %}
+                    {% continue %}
+                    {% endif %}
                     <p><a href="{{ post.url }}">{{ post.title }}</a></p>
                     {% endfor %}
                 </div>
@@ -41,6 +50,9 @@ include_p5: true
                 <h3 class="category-name x-noselect x sk tx-main1">RGSS~></h3>
                 <div class="cate-list">
                     {% for post in site.categories.rgss %}
+                    {% if jekyll.environment == "production" and post.tags contains 'hidden' %}
+                    {% continue %}
+                    {% endif %}
                     <p><a href="{{ post.url }}">{{ post.title }}</a></p>
                     {% endfor %}
                 </div>
@@ -49,6 +61,9 @@ include_p5: true
                 <h3 class="category-name x-noselect x sk tx-main1">杂文~></h3>
                 <div class="cate-list">
                     {% for post in site.categories.miscellaneous %}
+                    {% if jekyll.environment == "production" and post.tags contains 'hidden' %}
+                    {% continue %}
+                    {% endif %}
                     <p><a href="{{ post.url }}">{{ post.title }}</a></p>
                     {% endfor %}
                 </div>
