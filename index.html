@@ -6,60 +6,65 @@ include_p5: true
 <h1 class="home-webtitle x la mgy3 sk tx-antiqueRuby txh-antiqueRuby1 bg-main1 gr fs2 fs3-md fw9 lh1 x-cliptext x-italic x-noselect transformed debug16">Digital Shading Art &Tech</h1>
 <article class="home-content-upper x la posi-rel zi2">
     <div class="pages-menu x sk tx-cloud01 gr txal la pdt2 x-noselect">
-        <div class="menu-flex x la flex mg0" style="font-size: 13px;gap: 1rem;">
-            <div class="submenu x la bdl3-md pd1 sk bdb30 bgb30">
+        <div class="menu-flex x la flex fxaifs mg0" style="font-size: 13px;gap: 1rem;">
+            <div class="submenu x la pd1 pdx3-md sd5 sk bdb30 bgb">
                 <h3 class="category-name x-noselect x sk tx-main1">隐式建模~></h3>
+                <hr class="category-div x sk bdb">
                 <div class="cate-list">
                     {% for post in site.categories.modeling %}
                     {% if jekyll.environment == "production" and post.tags contains 'hidden' %}
                     {% continue %}
                     {% endif %}
-                    <p class="x sk txh-cloud02"><a href="{{ post.url }}">{{ post.title }}</a></p>
+                    <p class="x sk txh-cloud02"><span class="x sk tx-minor">_</span><a href="{{ post.url }}">{{ post.title }}</a></p>
                     {% endfor %}
                 </div>
             </div>
-            <div class="submenu x la bdt3-md pd1 sk bdb30 bgb30">
+            <div class="submenu x la pd1 pdx3-md sd5 sk bdb30 bgb30">
                 <h3 class="category-name x-noselect x sk tx-main1">场景~></h3>
+                <hr class="category-div x sk bdb30">
                 <div class="cate-list">
                     {% for post in site.categories.scene %}
                     {% if jekyll.environment == "production" and post.tags contains 'hidden' %}
                     {% continue %}
                     {% endif %}
-                    <p class="x sk txh-cloud02"><a href="{{ post.url }}">{{ post.title }}</a></p>
+                    <p class="x sk txh-cloud02"><span class="x sk tx-minor">_</span><a href="{{ post.url }}">{{ post.title }}</a></p>
                     {% endfor %}
                 </div>
             </div>
             <!-- if jekyll.environment == "development" endif -->
-            <div class="submenu x la bdt3-md pd1 sk bdb30 bg-main3">
+            <div class="submenu x la pd1 pdx3-md sd5 sk bdb30 bg-main3">
                 <h3 class="category-name x-noselect x sk tx-main1">渲染~></h3>
+                <hr class="category-div x sk bd-main3">
                 <div class="cate-list">
                     {% for post in site.categories.rendering %}
                     {% if jekyll.environment == "production" and post.tags contains 'hidden' %}
                     {% continue %}
                     {% endif %}
-                    <p class="x sk txh-cloud02"><a href="{{ post.url }}">{{ post.title }}</a></p>
+                    <p class="x sk txh-cloud02"><span class="x sk tx-minor">_</span><a href="{{ post.url }}">{{ post.title }}</a></p>
                     {% endfor %}
                 </div>
             </div>
-            <div class="submenu x la bdt3-md pd1 sk bdb30 bg-raisin">
+            <div class="submenu x la pd1 pdx3-md sd5 sk bdb30 bg-raisin">
                 <h3 class="category-name x-noselect x sk tx-main1">RGSS~></h3>
+                <hr class="category-div x sk bd-raisin">
                 <div class="cate-list">
                     {% for post in site.categories.rgss %}
                     {% if jekyll.environment == "production" and post.tags contains 'hidden' %}
                     {% continue %}
                     {% endif %}
-                    <p class="x sk txh-cloud02"><a href="{{ post.url }}">{{ post.title }}</a></p>
+                    <p class="x sk txh-cloud02"><span class="x sk tx-minor">_</span><a href="{{ post.url }}">{{ post.title }}</a></p>
                     {% endfor %}
                 </div>
             </div>
-            <div class="submenu x la bdl3-md pd1 sk bdb30 bgb30 debug8g">
+            <div class="submenu x la pd1 pdx3-md sd5 sk bdb30 bgb30 debug8g">
                 <h3 class="category-name x-noselect x sk tx-main1">杂文~></h3>
+                <hr class="category-div x sk bdb30">
                 <div class="cate-list">
                     {% for post in site.categories.miscellaneous %}
                     {% if jekyll.environment == "production" and post.tags contains 'hidden' %}
                     {% continue %}
                     {% endif %}
-                    <p class="x sk txh-cloud02"><a href="{{ post.url }}">{{ post.title }}</a></p>
+                    <p class="x sk txh-cloud02"><span class="x sk tx-minor">_</span><a href="{{ post.url }}">{{ post.title }}</a></p>
                     {% endfor %}
                 </div>
             </div>
