@@ -6,7 +6,10 @@ category: miscellaneous
 tags: hidden 音乐
 ---
 
-此文件目前仅上传作备份。2026年6月13日，15:30:33
+#
+<style>code{color:#ae3133}nav a{color:#ae3133!important}</style>
+<nav style="position:fixed;left:0;bottom:0;">
+[返回](#top)/ [音高](#_3)/ [音与谱](#_4)/ [时长](#_5)/ [八度音阶](#_7)/ [键签](#_8)/ [音程](#_9)/ [和音](#_10) / [返回](#top)</nav>
 
 ```ruby
 音符            note
@@ -253,36 +256,10 @@ Root
 COMMON TYPE                                                          ABBR
 ```
 
-#### 和弦处理
-以下为高级内容，未确认，请勿使用。  
-`非和弦音/步(Nonharmonic tones/non-chord tones)`指与原始和弦互斥的某个音。  
-首先定义`步(step)`为普通二音程，`跳(skip)`是三以上的音程。  
+#### 其他
+Other Aspects of Notation ❓请跳过  
+Other Rhythmic Essentials  ❓请跳过  
+Introduction to Diatonic Modes and the Chromatic “Scale” ❓请跳过 特定音阶  
 
-有以下几种非和弦音。注意，下面的播放使用排列。  
-和弦(各种排列)中间出现的过度音将替代某个和弦音符，称为非和弦音。  
-
-`经过音(PT passing tone)`在相同方向步进。  
-连线两端本身可能是属于该和弦的，如和弦(357)`753-(6)53-537`，过度时的和弦被替换。  
-
-`邻音(NT neighboring tone)`步进一次产生替换，并再折返一步回到原始音符。  
-
-`预期音(Ant anticipation)`步进一次之后在第二次不变融入(下一组中该音符刚好是原音符)，没有折返。  
-
-`逃逸音(ET escape tone)`步进--反方向跳。  
-
-`花音(App appoggiatura)`跳近，反步。  
-
-`暂停(Sus suspension)/迟滞(Ret retardation)`保持音符不变(由于排列消失而补充)，再向下一步。后者上一步。  
-
-`变音(CT changing tones)`连续使用两个非和弦音。步进+反跳+步进。  
-
-##### 短语
-`短语(phrase)`是一串音符，听起来是完整的歌，而无需和弦。  
-`终止(cadence)`指短语结束前的2个和弦过程(2个间隔)。结束于`V`和弦时，称为半终止(HC)。  
-当短语以V或Vii圆圈到I/i结束，称为`真正终止(authentic cadence) AC`。  
-
-##### 根音移动
-`根音移动(root motion)`，找出一对和弦的根音符，如`F-G`，对于第二个根，注意两个方向查找G都可以。  
-如果根音移动恰好为上4下5，则称为`环进行(circle progression)`；  
-
-注意，逼近I和弦等模式的介绍，逆三和弦的作曲用法在本文省略。  
+关于音程🆗：  
+如果需要其他识别音程的方式，请见这里的 大调音阶性质法(部分情况无法使用，使用逆方法)、白键法、音程等音等价(和转位相同)  
