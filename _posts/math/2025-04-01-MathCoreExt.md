@@ -1,9 +1,9 @@
 ---
 layout: page
-title:  "3D数学薄记"
+title:  "CoreExt1"
 author: mosfet
-category: miscellaneous
-tags: 数学 微积分
+category: math
+tags: academic 微积分 线性代数
 ---
 
 ---

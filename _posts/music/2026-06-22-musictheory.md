@@ -2,7 +2,7 @@
 layout: page
 title:  "乐理"
 author: mosfet
-category: miscellaneous
+category: music
 tags: hidden 音乐
 ---
 

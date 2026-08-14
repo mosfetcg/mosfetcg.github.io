@@ -2,7 +2,7 @@
 layout: page
 title:  "简单套接字"
 author: mosfet
-category: miscellaneous
+category: devtools
 tags: 计算机科学 计算机网络
 ---
 程序如下：
