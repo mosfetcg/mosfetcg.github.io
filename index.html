@@ -4,7 +4,7 @@ title: Digital Shading Art&Tech
 include_p5: true
 ---
 <h1 class="home-webtitle x la mgy3 sk tx-antiqueRuby txh-antiqueRuby1 bg-main1 gr fs2 fs3-md fw9 lh1 x-cliptext x-italic x-noselect transformed debug16">Digital Shading Art &Tech</h1>
-<article class="home-content-upper x la posi-rel zi2 birthDay oph100-lg op20-lg transformed">
+<article class="home-content-upper x la posi-rel zi2 transformed">
     <div class="pages-menu x sk tx-cloud01 gr txal la pdt2 x-noselect">
         <div class="menu-flex x la flex fxaifs mg0" style="font-size: 13px;gap: 1rem;">
             <div class="submenu x la pd1 pdx3-md sd5 sk bdb30 bgb">
@@ -97,6 +97,30 @@ include_p5: true
                 <hr class="category-div x sk bdb30">
                 <div class="cate-list">
                     {% for post in site.categories.miscellaneous %}
+                    {% if jekyll.environment == "production" and post.tags contains 'hidden' %}
+                    {% continue %}
+                    {% endif %}
+                    <p class="x sk txh-cloud02"><span class="x sk tx-minor">_</span><a href="{{ post.url }}">{{ post.title }}</a></p>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="submenu x la pd1 pdx3-md sd5 sk bdb30 bgb30 debug8g">
+                <h3 class="category-name x-noselect x sk tx-main1">活着~></h3>
+                <hr class="category-div x sk bdb30">
+                <div class="cate-list">
+                    {% for post in site.categories.living %}
+                    {% if jekyll.environment == "production" and post.tags contains 'hidden' %}
+                    {% continue %}
+                    {% endif %}
+                    <p class="x sk txh-cloud02"><span class="x sk tx-minor">_</span><a href="{{ post.url }}">{{ post.title }}</a></p>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="submenu x la pd1 pdx3-md sd5 sk bdb30 bgb30 debug8g">
+                <h3 class="category-name x-noselect x sk tx-main1">感情~></h3>
+                <hr class="category-div x sk bdb30">
+                <div class="cate-list">
+                    {% for post in site.categories.philosophy %}
                     {% if jekyll.environment == "production" and post.tags contains 'hidden' %}
                     {% continue %}
                     {% endif %}
