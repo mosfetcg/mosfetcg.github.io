@@ -1,6 +1,6 @@
 ---
 layout: page
-title:  "3D数学"
+title:  "TechExt1"
 author: mosfet
 category: math
 tags: 数学 技巧
