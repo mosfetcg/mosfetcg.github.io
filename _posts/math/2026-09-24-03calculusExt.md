@@ -11,8 +11,8 @@ tags: academic hidden 微积分
 ---
 ```
 Differential Calculus     不在本文范围
-Integral Calculus         REST✅
-Multivariable calculus    不在本文范围
+Integral Calculus         REST to main✅
+Multivariable calculus    REST to main✅
 ```
 
 ## 表达式快速参考
@@ -50,5 +50,5 @@ limn->INF| [∫1..n|x^-2 dx] = AD(n)-AD(1) = 1-1/n = 1
 微积分除了DC,MC,IC其他都是重复的。  
 总之，这次更新、简化之后完成了。  
 ```
-DC MC IC✅
+DC IC MC✅
 ```

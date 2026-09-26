@@ -3,7 +3,7 @@ layout: page
 title:  "图元"
 author: mosfet
 category: math
-tags: 数学
+tags: 数学 图形表达
 ---
 
 本文(#267710)按理说应该属于标准，但因为需要经常查询、参考和修改不作为标准。  
