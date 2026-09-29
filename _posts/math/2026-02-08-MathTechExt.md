@@ -6,8 +6,6 @@ category: math
 tags: 数学 技巧
 ---
 
-# 高阶
-## LA
 ### 向量
 cross容易用一种伪判别式的形式表达。或者线性变换T(Q)。  
 ```ruby
