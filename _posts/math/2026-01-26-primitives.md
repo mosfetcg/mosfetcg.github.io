@@ -3,15 +3,13 @@ layout: page
 title:  "图元"
 author: mosfet
 category: math
-tags: 数学 图形表达
+tags: 数学
 ---
 
-本文(#267710)按理说应该属于标准，但因为需要经常查询、参考和修改不作为标准。  
+<style>code{color:#267710}nav a{color:#267710!important}</style>
 
-关于现有资料的图元的信息整合分布：  
-1 光线追踪中，相交测试的内容也出现了一些图形。  
-2 渲染领域中，通常称呼它们为曲线，仅有terms一文进行提要，并且那边已将这些概念进行抽象而不涉及具体内容，因此可分离。  
-3 而在曲线一文，是对参数近似曲线进行了详细的研究，暂时也不冲突，对于各种形式最终可能都混合在这里。  
+本文暂不归入ACA标准，因为需要经常查询、参考和修改，但其重要程度不相上下。  
+这里我们会推导所有图元的表达。  
 
 ## REFs
 ```
@@ -20,6 +18,10 @@ https://www.khanacademy.org/math/linear-algebra/vectors-and-spaces/dot-cross-pro
 https://www.khanacademy.org/math/linear-algebra/vectors-and-spaces/dot-cross-products/v/point-distance-to-plane
 https://www.khanacademy.org/math/linear-algebra/vectors-and-spaces/dot-cross-products/v/distance-between-planes
 https://www.khanacademy.org/math/linear-algebra/vectors-and-spaces/null-column-space/v/visualizing-a-column-space-as-a-plane-in-r3
+关于现有资料的图元的信息整合分布：  
+1 光线追踪中，相交测试的内容也出现了一些图形。  
+2 渲染领域中，通常称呼它们为曲线，仅有terms一文进行提要，并且那边已将这些概念进行抽象而不涉及具体内容，因此可分离。  
+3 而在曲线一文，是对参数近似曲线进行了详细的研究，暂时也不冲突，对于各种形式最终可能都混合在这里。  
 ```
 
 ## 线
