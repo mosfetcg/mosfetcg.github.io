@@ -8,28 +8,37 @@ tags: 数学
 
 <style>code{color:#267710}nav a{color:#267710!important}</style>
 
-本文暂不归入ACA标准，因为需要经常查询、参考和修改，但其重要程度不相上下。  
-这里我们会推导所有图元的表达。  
-
-## REFs
 ```
-https://www.khanacademy.org/math/linear-algebra/vectors-and-spaces/dot-cross-products/v/defining-a-plane-in-r3-with-a-point-and-normal-vector
-https://www.khanacademy.org/math/linear-algebra/vectors-and-spaces/dot-cross-products/v/normal-vector-from-plane-equation
 https://www.khanacademy.org/math/linear-algebra/vectors-and-spaces/dot-cross-products/v/point-distance-to-plane
 https://www.khanacademy.org/math/linear-algebra/vectors-and-spaces/dot-cross-products/v/distance-between-planes
-https://www.khanacademy.org/math/linear-algebra/vectors-and-spaces/null-column-space/v/visualizing-a-column-space-as-a-plane-in-r3
 关于现有资料的图元的信息整合分布：  
 1 光线追踪中，相交测试的内容也出现了一些图形。  
 3 而在曲线一文，是对参数近似曲线进行了详细的研究，暂时也不冲突，对于各种形式最终可能都混合在这里。  
 ```
 
-## 杂项
+本文暂不归入ACA标准，因为需要经常查询、参考和修改，但其重要程度不相上下。  
+这里我们会推导所有图元的表达。  
+
+## 通用
 #### 隐式等值区和梯度
 `▼`现在推断。查看▽v-f的定义，如果您沿着与梯度方向垂直的方向走，速率为0。因为梯度自然存在，那么其不动的左右侧区域也存在，进而形成复杂的形状。  
-在隐式方程中，不动区域通常是f=C构成区域，如果我们取其一段，则与梯度垂直！换句话说，反过来梯度与其垂直。  
+在隐式方程中，不动区域通常是f=C构成区域，如果我们取其一段，则与梯度垂直！换句话说，反过来梯度与其形状垂直。  
 这种思想还可以推导三维梯度必定垂直于f(p)=C曲面。  
 
-## 直线
+#### 定义隐式图元的步骤
+`▼`如前所述，隐式方程F(p)=C是一组约束，p要么是约束集，要么不满足约束。  
+`▼`如果对图元的框架之间的关系感到困惑，建议阅读此节。  
+
+在定义时，一般P直接视为图形上的点表达到方程。  
+
+定义图元只需要一个框架。以原点为锚点开始描述。  
+让我们举例，球需要一个中心、半径，P。C和P都在**该框架下**描述，  
+当然我们可以写出(P-C)的定义，让球位于锚点外面，这就像一个"拉着绳子的球"，而然，这种模型对于旋转等操作很痛苦。  
+你希望球自转，就不能直接应用该框架的旋转！不是绕着绳子转。基于类似的原因，几乎所有人都选择了这一点——令中心位于原点去定义。  
+
+---
+## 1. 直线
+#### 2D直线
 因为是简单的二元线性关系，隐式方程是：  
 ```ruby
 y = kx => Ax+By+C = 0
@@ -39,28 +48,31 @@ y = kx => Ax+By+C = 0
 给定两点，方程为(y-y1/x-x1)=(y2-y1/x2-x1)化简为：(y0-y1)x+(x1-x0)y+x0y1-x1y0=0。  
 
 #### 点距离和垂足
-如前所述，▽ = (A,B)必然垂直线。给定点等于直线上的某点p0+kn = p。距离就是kn的大小。  
-为了避免计算p0，简化为d = f(p)/sqrt(A²+B²)
+如前所述，▽ = (A,B)必然垂直线。  
+我们假设给定点p1是沿着f=0的一点p0沿着norm(▽)外移d得到的。再将此代入到f，得到len(▽)d。  
+因此d = f/len(▽)。  
 
 一种方式是将直线视为向量，以及点P到直线定点的向量，算出其垂线。  
 
-## 平面
+## 2. 平面
+平面最容易以梯度进行解释，因为整个面都是等值的。隐式方程是：  
 ```ruby
-dot(n, X-P) = 0 => Ax+By+Cz=D
-     #v_plane 至少需要平面一点P和法线N
-
-# 拆解dot即标准形式
-# 如n1x、n2y的部分说明了法线的分量。而减号部分会将P隐藏，造成常量总计：
-D = -N·P
-
-# 下式给出了如果平面进行平移经过原点的距离，注意任意X本身对原点的距离都不同，在平移距离d时X到达不同的点。  
-# 换句话说，沿着N进行平移。
-d =  D / len(N)
-
-if norm, sdf = dot(N, Q)+D
-
-# intersection on line, eval sdf = 0 with Q = P(t)
+dot(n, p) = 0    => Nxx+Nyy+Nzz=0
 ```
+`▼`用于图元的平面应该位于原点。如前所述，满足旋转操作。  
+而然，对于数学工具而言，您可以快速锁定一个任意一处的平面作计算，这种情况虽然不属于图元，但表达式相当有用。  
+```ruby
+dot(n, p-p0) = 0 => Nxx+Nyy+Nzz= NxP0x + NyP0y + NzP0z  # Ax+By+Cz = D
+```
+注意到，D=dot(N, p0)是一个常数，
+```ruby
+D=dot(N, p0) = len(p0)cos = len(p0)proj_p,n / len(p0) = proj_p,n
+```
+因为任何P在N上的投影都相同，而N穿过原点，平面到原点距离就是那段截取的大小D。  
 
 #### 点距离 
 找一个平面点，再假设P连接垂线构成三角形，用余弦算。  
+
+if norm, sdf = dot(N, Q)+D
+# intersection on line, eval sdf = 0 with Q = P(t)
+2D Parametric Curves 54
