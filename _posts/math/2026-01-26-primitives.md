@@ -44,15 +44,13 @@ https://www.khanacademy.org/math/linear-algebra/vectors-and-spaces/dot-cross-pro
 y = kx => Ax+By+C = 0
 ```
 
-其他给定形式不常用。  
 给定两点，方程为(y-y1/x-x1)=(y2-y1/x2-x1)化简为：(y0-y1)x+(x1-x0)y+x0y1-x1y0=0。  
+其他给定形式不常用。  
 
 #### 点距离和垂足
-如前所述，▽ = (A,B)必然垂直线。  
-我们假设给定点p1是沿着f=0的一点p0沿着norm(▽)外移d得到的。再将此代入到f，得到len(▽)d。  
-因此d = f/len(▽)。  
-
 一种方式是将直线视为向量，以及点P到直线定点的向量，算出其垂线。  
+
+现在我们分析形状，▽f = (A,B)必然垂直线。  
 
 ## 2. 平面
 平面最容易以梯度进行解释，因为整个面都是等值的。隐式方程是：  
@@ -66,9 +64,9 @@ dot(n, p-p0) = 0 => Nxx+Nyy+Nzz= NxP0x + NyP0y + NzP0z  # Ax+By+Cz = D
 ```
 注意到，D=dot(N, p0)是一个常数，
 ```ruby
-D=dot(N, p0) = len(p0)cos = len(p0)proj_p,n / len(p0) = proj_p,n
+D=dot(N, p0) = len(p0)cos = len(p0) [proj_p0,n/len(p0)] = proj_p0,n
 ```
-因为任何P在N上的投影都相同，而N穿过原点，平面到原点距离就是那段截取的大小D。  
+也就是说，该点在N上的投影为D，而N穿过原点，P0向量穿过原点且到平面，平面到原点距离就是那段截取的大小D。  
 
 #### 点距离 
 找一个平面点，再假设P连接垂线构成三角形，用余弦算。  
