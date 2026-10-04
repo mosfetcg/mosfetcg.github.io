@@ -130,7 +130,6 @@ float sdMANDELBULB( in vec3 pos) {
 
 ## 通过隐式近似估值距离完成SDF
 首先介绍可用材料。其中重要的两篇材料都提到了修复该隐式方程的方法是隐式近似。列表最后贴出了它们引用的文章，您也可以查看
-[从隐式方程近似距离场]({% link _posts/modeling/2024-10-16-impfunc_modeling_and_sdf_approximate.md %})
 ```plain
 https://thebookofshaders.com/   尚未更新分形，但就是下一章
 
