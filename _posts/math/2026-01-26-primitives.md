@@ -80,4 +80,3 @@ D=dot(N, p0) = len(p0)cos = len(p0) [proj_p0,n/len(p0)] = proj_p0,n
 
 if norm, sdf = dot(N, Q)+D
 # intersection on line, eval sdf = 0 with Q = P(t)
-2D Parametric Curves 54
