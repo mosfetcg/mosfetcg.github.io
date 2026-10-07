@@ -45,10 +45,10 @@ include_p5: true
                 </div>
             </div>
             <div class="submenu x la pd1 pdx3-md sk">
-                <h3 class="category-name x-noselect x sk tx-main1">路径追踪~></h3>
+                <h3 class="category-name x-noselect x sk tx-main1">光线追踪~></h3>
                 <hr class="category-div x sk bd-main3">
                 <div class="cate-list">
-                    {% for post in site.categories.pathtracing %}
+                    {% for post in site.categories.raytracing %}
                     {% if jekyll.environment == "production" and post.tags contains 'hidden' %}
                     {% continue %}
                     {% endif %}
