@@ -3,7 +3,7 @@ layout: page
 title:  "GI优化技术2"
 author: mosfet
 category: rendering
-tags: 全局照明 优化
+tags: hidden 全局照明 优化
 ---
 
 ## 参考1

@@ -3,7 +3,7 @@ layout: page
 title:  "参与介质"
 author: mosfet
 category: rendering
-tags: 渲染 参与介质
+tags: hidden 渲染 参与介质
 ---
 
 重写于2025/10/04。  
