@@ -8,12 +8,6 @@ tags:
 
 <style>code:not(pre code) {color:green!important}</style>
 
-## refs
-```
-高级直接照明 - lectrue10,11, pbrt12
-经典全局照明 - lectrue12, focg23
-```
-
 ## 高级直接照明
 #### 直接照明
 从更高层次考虑设计总有助于理解你的渲染的正确性，目前求解的积分在做什么？以及对应您的目的是在物理上正确的吗？  
