@@ -8,50 +8,12 @@ tags:
 
 <style>code:not(pre code) {color:green!important}</style>
 
-#### 光源建模(pbrt.12.2~5)
-四种具体建模类型：点、方向、面、无限。  
-
-#### 多重重要性采样(Multiple Importance Sampling)
-为了实现最佳光采样(减小物理设计偏差)，通常分析特定因子并导出一种抽样策略，如根据材料反射率，重要光源，或者只是一般的均匀环境光策略等等。  
-若从每种技术策略抽取样本并最后平均的简单方式会引入方差，引入MIS是为了智能地分析更匹配形状的技术样本并为其正确分配配重，从而消除此类影响。首先，一般来说，多策略样本的估值器如下所述：  
-```ruby
-# 27
-# https://www.pbr-book.org/4ed/Monte_Carlo_Integration/Improving_Efficiency#MultipleImportanceSampling
-pn: pa pb...    # 多种分布的估值器
-EST [ wa(dua)*fdua/pa(dua) + wb(dub)fdub/pb(dub) + ... ]
-# 估值正确的配重函数条件是：Σw = 1 && if pn=0 then wn = 0
-
-# 如前所述，设置均分的效果不好。
-wn = 1/n_total
-
-# MIS平衡启发式算法如下，其目的是使较为匹配的技术具有相对更大的配重
-# balance heuristic
-wn = pn(du) / Σa..j|pj(du)
-
-# 对于两个策略的估值器
-fdua / (pa(dua) + pb(dua)) +
-fdub / (pa(dub) + pb(dub))
-```
-即使没有从所有分布中采样，也可以应用多重重要性采样。这种方法称为单样本模型。其中，`qn`是选择该策略的概率。对于单样本模型，平衡启发式被证明是最优的。  
-```ruby
-(wn(du)/qn) * (fdu/pndu)
-```
-
-**MIS补偿**。  
-
-#### 环境采样(Environment Map Lights)
-根据环境图亮度导出抽样策略。  
-略；  
-
-#### 分裂(splitting)
-略；  
-
-#### 多光随机采样(Many-Light Sampling, pbrt.12.6)
+<!-- #### 多光随机采样(Many-Light Sampling, pbrt.12.6)
 多光源的照明(辐射测量中的线性假设)类似于叠加，但无需真的分别进行采样累加，这将相当昂贵，  
 可以随机选择一个光源，并按照光源贡献配重此样本。  
-在均匀灯源采样概率下，概率质量函数(PMF)的值始终为1除以灯的数量。功率概率也很常见。实践中，要评估最近的重要光源，还需要为光对象建立空间数据结构。  
+在均匀灯源采样概率下，概率质量函数(PMF)的值始终为1除以灯的数量。功率概率也很常见。实践中，要评估最近的重要光源，还需要为光对象建立空间数据结构。   -->
 
----
+<!-- ---
 ## 经典全局照明(Kajiya, 1986)
 不同文献导致了这一算法真正理解上的困难。有时错误的渲染结果也难以发现。  
 
@@ -107,4 +69,4 @@ if (rand() > survivalProb) {
     break; // terminate path
 }
 dcol /= survivalProb; // scale to keep estimator unbiased
-```
+``` -->
