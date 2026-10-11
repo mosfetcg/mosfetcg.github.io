@@ -16,18 +16,14 @@ Lo(p,ωo) = ∫H²|fr(p,ωlight->ωo)Lδ(ω-ωlight)cosθidωi
 ```
 
 ## 圆锥球光源采样
-待整理！同时检查10.20。  
+这里张开的最大半角的cos值是sqrt(1 - r²/d²)。  
 
-<!-- ```ruby
-dist = len(c-x)
-sinα = R/d or cosα = sqrt(1 - sinα²)  # α最大半边角度 α = asin/ acos
-
-q = 1/ 2Pi(1-cosα)                    # 均匀密度
-cosθ = 1-ξ1+ξ1cosα                    # 确定后，可知uvw中的采样位置
-   φ = 2PIξ2
-q = p(x2)cosθ2 / len(x, x2)           # 球面上的点
-p(x2) = cosθ2 / 2PIlen(x,x2)(1-cosα)
-``` -->
+```ruby
+# 无证明推导
+p(A) = ...           #=> P^-1 = 2PIξ1
+p(P) = ...           #=> cosP = (1-ξ2)+ξ2cosθ
+p(ω) = 1 / 2PI(1-cosθ)
+```
 
 下图显示了不对球正面进行重要性采样的方差差别。  
 视线立体角区域的立体角采样通常方差都更小。  
