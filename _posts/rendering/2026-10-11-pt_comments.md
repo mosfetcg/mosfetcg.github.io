@@ -53,7 +53,7 @@ vec3 S( in Material M, in vec3 wo, inout vec3 wi, inout float pdf) {
 类似可能遇到的问题还有：能量守恒、调试、工程方面。  
 
 # 混合密度比较
-混合密度方法是一种MIS，主要是将diffuse材质MIS上灯光、以及玻璃体(指向对象)、自然朗伯散射三种策略。  
+Peter Shirley混合密度方法是一种MIS，主要是将diffuse材质MIS上灯光、以及玻璃体(指向对象)、自然朗伯散射三种策略。  
 可以在"淳朴"型光线追踪中，提升漫反射表面的正确表现，弹射至透明材质以实现高级焦散。  
 
 而在NNE中，漫反射表面本身就被设计的表现良好。  
@@ -68,4 +68,21 @@ vec3 S( in Material M, in vec3 wo, inout vec3 wi, inout float pdf) {
     </div>
   </div>
   <p>左图：密度漫射MIS。右图：NNE</p>
+</div>
+
+# 能量守恒
+如果保持能量守恒。在NEE禁止Lii中漫射表面射向光源的额外Le。并使用漫射三重MIS。我得到了目前看似最好的结果。  
+
+---
+# 图集
+版权所有。  
+
+<div class="x gr txac">
+  <div class="x la flex mg0">
+    <div class="x la item6-lg item12 pd0">
+      <img src="/assets/i/10-3.png">
+    </div>
+    <div class="x la item6-lg item12 pd0">
+    </div>
+  </div>
 </div>
