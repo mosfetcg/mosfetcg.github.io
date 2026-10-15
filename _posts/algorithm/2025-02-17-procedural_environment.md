@@ -1,9 +1,9 @@
 ---
 layout: page
-title:  "环境"
+title:  "程序化环境"
 author: mosfet
 category: algorithm
-tags: 场景
+tags: 程序化 环境建模
 ---
 让我们讨论一些实用图形技术。  
 我们使用一个非常普通的渲染器作为示例，使用SDF寻找表面，并启用路径积分。以提供体积渲染的可能性。  

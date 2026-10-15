@@ -1,6 +1,6 @@
 ---
 layout: page
-title:  "简单套接字"
+title:  "简单套接字通信"
 author: mosfet
 category: devtools
 tags: 计算机科学 计算机网络
