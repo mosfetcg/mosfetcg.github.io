@@ -6,60 +6,15 @@ category: rendering
 tags: hidden 照明
 ---
 
-为了方便，本文是在光线行进渲染中描述的实现。  
-
 ## 环境光遮蔽
-尽管环境光遮蔽(AO)常常被列为近似GI的一种方法。而然这并不是GI。可见人们对此的定义可能是提供了类似GI的部分表现的特定功能。  
-```cpp
-float ambient_occlusion( in vec3 p, in vec3 n, in float maxDistance, in float falloff) {
-  float ao = 0.0;
-  const int samples = 4;
+环境光遮蔽(AO)常常被列为一种GI方法。而然这并不是GI。可见人们对此的定义可能是提供了类似GI的部分表现的特定功能。  
 
-  for (int i = 0; i < samples; i++) {
-    float move_off = random(float(i)) * maxDistance;
-    vec3 direction = n * move_off;
-    ao += (move_off - max(scene(p + direction), 1.0)) / maxDistance * falloff;
-  }
-  return clamp(1.0 - ao / float(samples), 0.0, 1.0);
-}
-```
 AO来自于这样一个事实，互相遮蔽的表面暴露在恒定环境光中将产生特定的阴影，遮蔽值对此衰减进行测量。对于特定表面，光线可能在许多方向上被其他表面遮挡，遮挡越多，该地区就越闭塞，使得它们在环境光的照明下越少。  
-这当然不是实现GI反射的技巧，在完整的GI模拟中，闭塞处会自然被阴影。AO期望查找与此类似的表现。  
+这当然不是通过模拟光线实现的，在完整的GI模拟中，闭塞处会自然被阴影。AO期望查找与此类似的表现。  
 
-## 软阴影
-```cpp
-float marching_softshadow( in vec3 start, in vec3 dir, in float min_travel, in float max_travel, in float factor) {
-  float soft_shadow = 1.0;
-  float traveled = min_travel;
-  for (int i = 0; i < 128 && traveled < max_travel; ++i) {
-    float safe_step = scene(start + traveled * dir);
-    if (safe_step < C_EPS) {
-      return soft_shadow = 0.0;
-    }
-    traveled += safe_step;
-    soft_shadow = min(soft_shadow, factor * safe_step / traveled);
-  }
-  return soft_shadow;
-}
-```
+## 一般组成
+太阳光会(平行光)形成锐利的阴影，该影子通常被天空光照明为淡淡的蓝色。  
+AO可以捕获天空光的阴影方式，形成更好的二次光源着色。  
+这两个光源一般都很强，但具有对比。  
 
-## 照明的通用概念
- <div class="x gr txac">
-  <div class="x la flex mg0">
-    <div class="x la item4-lg item12 pd0 transformed sk bgh-gunmetal">
-      <img src="/assets/i/3-1.png">
-    </div>
-  </div>
-  <p>图1：照明的理念</p>
-</div>
-
-太阳强烈的平行光带来太阳阴影，因为背后的间接光不足以提升到周围的相同水平，这就是为什么这里比周围更暗。  
-天空光来自于大气散射的次要散射光，具有巨大的体积，AO很好地捕获了该光源的阴影区域。  
-
-不要认为环境光(传统模型)是狭小的，天空光至少应该看得清物体，而太阳光让场景更具戏剧性。  
-间接照明是昂贵的！我们将有限的散射补充用于近似另一部分的"环境光"。想想看，因为它照明了背面，不是吗？  
-散射量的近似不一定需要乘以颜色，而是视为黑暗中的额外"光亮"，如上所述。  
-
-有的人喜欢反向太阳光来近似散射，但我不喜欢。  
-
-雾，对于大型场景，表现不错。  
+间接照明的粗略近似仍然是昂贵的，例如单次散射。但可以使得传统模型中的环境光更加真实。   
