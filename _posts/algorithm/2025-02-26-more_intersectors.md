@@ -1,9 +1,9 @@
 ---
 layout: page
-title:  "更多交叉测试"
+title:  "SDF测试"
 author: mosfet
 category: algorithm
-tags: 场景
+tags: hidden
 ---
 我们讨论几种十分特别的交叉方式，它们的某些细节决定了渲染它们所指定的对象时起到的正确性。  
 

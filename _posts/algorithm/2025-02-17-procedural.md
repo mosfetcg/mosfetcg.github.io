@@ -1,6 +1,6 @@
 ---
 layout: page
-title:  "更真实的环境"
+title:  "环境"
 author: mosfet
 category: algorithm
 tags: 场景
