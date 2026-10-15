@@ -3,7 +3,7 @@ layout: page
 title:  "像素画"
 author: mosfet
 category: miscellaneous
-tags: 像素画
+tags: 像素画 hidden
 ---
 
 ```

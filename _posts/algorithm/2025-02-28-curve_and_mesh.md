@@ -2,8 +2,8 @@
 layout: page
 title:  "曲线和网格"
 author: mosfet
-category: scene
-tags: 场景 曲线 网格
+category: algorithm
+tags: hidden 场景 曲线 网格
 ---
 在计算机图形领域，某些测试模型具有标志性名声，如犹他州茶壶(utah teapot)、斯坦福兔子(stanford bunny)。该茶壶是计算机图形学的象征。  
 有趣的是，这两个模型是由参数曲面和物理扫描两种方式建模的，为了在光栅管道可用，也被预处理为网格数据。  

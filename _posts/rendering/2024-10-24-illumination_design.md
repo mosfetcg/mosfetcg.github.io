@@ -1,6 +1,6 @@
 ---
 layout: page
-title:  "光照决策"
+title:  "照明设计"
 author: mosfet
 category: rendering
 tags: hidden 照明

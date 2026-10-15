@@ -2,7 +2,7 @@
 layout: page
 title:  "更多交叉测试"
 author: mosfet
-category: scene
+category: algorithm
 tags: 场景
 ---
 我们讨论几种十分特别的交叉方式，它们的某些细节决定了渲染它们所指定的对象时起到的正确性。  

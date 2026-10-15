@@ -2,7 +2,7 @@
 layout: page
 title:  "更真实的环境"
 author: mosfet
-category: scene
+category: algorithm
 tags: 场景
 ---
 让我们讨论一些实用图形技术。  
