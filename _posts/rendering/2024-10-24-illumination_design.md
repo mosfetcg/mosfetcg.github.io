@@ -5,8 +5,6 @@ author: mosfet
 category: rendering
 tags: hidden 照明
 ---
-一旦确定基本渲染方式(光栅/光线追踪)，你会如何选择合适的照明技术？  
-由于两种框架下的对象定义以及可访问性几乎都不同，同一种照明策略很大程度上不通用，或者至少需要以不同方式实现。已经有多种事实说明这一点。例如，PBR在光栅中仅能被粗略近似。因此，这些技术最好按照类型进行分类，本文期望对这每一种都构建起良好的直觉，本文尊敬GI的真实效果以及近似情况的讨论，以此为目标构建出通常情况下都足够真实可信的照明，不同意这种目的的读者可能需要查看其他风格化方法。  
 
 ## 环境光遮蔽
 尽管环境光遮蔽(AO)常常被列为近似GI的一种方法。而然这并不是GI。可见人们对此的定义可能是提供了类似GI的部分表现的特定功能。  
@@ -26,8 +24,24 @@ float ambient_occlusion( in vec3 p, in vec3 n, in float maxDistance, in float fa
 AO来自于这样一个事实，互相遮蔽的表面暴露在恒定环境光中将产生特定的阴影，遮蔽值对此衰减进行测量。对于特定表面，光线可能在许多方向上被其他表面遮挡，遮挡越多，该地区就越闭塞，使得它们在环境光的照明下越少。  
 这当然不是实现GI反射的技巧，在完整的GI模拟中，闭塞处会自然被阴影。AO期望查找与此类似的表现。  
 
+## 软阴影
+```cpp
+float marching_softshadow( in vec3 start, in vec3 dir, in float min_travel, in float max_travel, in float factor) {
+  float soft_shadow = 1.0;
+  float traveled = min_travel;
+  for (int i = 0; i < 128 && traveled < max_travel; ++i) {
+    float safe_step = scene(start + traveled * dir);
+    if (safe_step < C_EPS) {
+      return soft_shadow = 0.0;
+    }
+    traveled += safe_step;
+    soft_shadow = min(soft_shadow, factor * safe_step / traveled);
+  }
+  return soft_shadow;
+}
+```
+
 ## 照明的通用概念
-最快描述如何正确照明的方法可能不是文字，试想一下以下场景：  
  <div class="x gr txac">
   <div class="x la flex mg0">
     <div class="x la item4-lg item12 pd0 transformed sk bgh-gunmetal">
