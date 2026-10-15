@@ -8,14 +8,6 @@ tags: 数学
 
 <style>code{color:#267710}nav a{color:#267710!important}</style>
 
-```
-https://www.khanacademy.org/math/linear-algebra/vectors-and-spaces/dot-cross-products/v/point-distance-to-plane
-https://www.khanacademy.org/math/linear-algebra/vectors-and-spaces/dot-cross-products/v/distance-between-planes
-关于现有资料的图元的信息整合分布：  
-1 光线追踪中，相交测试的内容也出现了一些图形。  
-3 而在曲线一文，是对参数近似曲线进行了详细的研究，暂时也不冲突，对于各种形式最终可能都混合在这里。  
-```
-
 本文暂不归入ACA标准，因为需要经常查询、参考和修改，但其重要程度不相上下。  
 这里我们会推导所有图元的表达。  
 
@@ -44,14 +36,14 @@ https://www.khanacademy.org/math/linear-algebra/vectors-and-spaces/dot-cross-pro
 y = kx => Ax+By+C = 0
 ```
 
-给定两点，方程为(y-y1/x-x1)=(y2-y1/x2-x1)化简为：(y0-y1)x+(x1-x0)y+x0y1-x1y0=0。  
+给定两点，方程为(y-y1/x-x1)=(y2-y1/x2-x1)，防止分母无效，等价式：x(y2-y1)+y(x1-x2)+y1x2-x1y2=0。  
 其他给定形式不常用。  
 
 #### 点距离和垂足
 一种方式是将直线视为向量，以及点P到直线定点的向量，算出其垂线。  
 
-另一种方法是基于梯度。(focg)  
-他的意思是f在梯度方向上增长是匀速的，从而推导了一个距离公式，本质上和SDF近似完全相同，但完全精确。▽=(A,B)必然垂直线。  
+另一种方法是基于梯度。在2D直线中梯度\[A,B\]只是垂直于线段。代入近似公式，d = f(p)/len(▽)。由于直线的特殊性，它的近似值会奇迹般地退化为绝对精确值公式，我建议保留此未来的证明，但一般无需在意这点繁琐性。  
+`▼`此公式也是直线以及平面(见下)的直接SDF函数，您可以检查其梯度为1。  
 
 #### 3D直线
 3D直线和射线无一例外都采用参数方程表达。  
@@ -60,7 +52,7 @@ p(t) = o + kd
 ```
 
 ## 2. 平面
-平面最容易以梯度进行解释，因为整个面都是等值的。隐式方程是：  
+平面很经典，因为整个面都是等值的，梯度垂直它。满足所有垂直法线的p几何约束的隐式方程是：  
 ```ruby
 dot(n, p) = 0    => Nxx+Nyy+Nzz=0
 ```
@@ -76,7 +68,9 @@ D=dot(N, p0) = len(p0)cos = len(p0) [proj_p0,n/len(p0)] = proj_p0,n
 也就是说，该点在N上的投影为D，而N穿过原点，P0向量穿过原点且到平面，平面到原点距离就是那段截取的大小D。  
 
 #### 点距离 
-找一个平面点，再假设P连接垂线构成三角形，用余弦算。  
+一种方法求平面点到给定点到法线的投影。  
 
-if norm, sdf = dot(N, Q)+D
-# intersection on line, eval sdf = 0 with Q = P(t)
+另一种方法同样精确，梯度为\[A,B,C\]。  
+
+#### 射线交点
+要求3D射线和平面相交，求Ray(t)等于平面SDF=0的解。  
