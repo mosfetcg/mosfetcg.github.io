@@ -3,7 +3,7 @@ layout: page
 title:  "程序化环境"
 author: mosfet
 category: algorithm
-tags: 程序化 环境建模
+tags: hidden 程序化 环境建模
 ---
 本文总结了一些可能实用环境效果模拟技术。  
 

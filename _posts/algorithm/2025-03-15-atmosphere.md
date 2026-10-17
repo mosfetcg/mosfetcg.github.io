@@ -132,13 +132,13 @@ vec3 atmosphere( in vec3 ro, in vec3 rd, in vec3 sd, in float C) {
 ## 截图
 <div class="x gr txac">
   <div class="x la flex mg0">
-    <div class="x la item4-lg item4 pd0">
+    <div class="x la item6-lg item6 pd0">
       <img src="/assets/i/2-1.png">
     </div>
-    <div class="x la item4-lg item4 pd0">
+    <div class="x la item6-lg item6 pd0">
       <img src="/assets/i/2-2.png">
     </div>
-    <div class="x la item4-lg item4 pd0">
+    <div class="x la item6-lg item6 pd0">
       <img src="/assets/i/2-3.png">
     </div>
   </div>
