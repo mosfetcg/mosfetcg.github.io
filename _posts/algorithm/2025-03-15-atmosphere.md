@@ -42,7 +42,7 @@ p(cosθ) = (3/8Π) * [(1-g²)(1+cos²θ)]/[(2+g²)(1+g²-2gcosθ)^1.5] #Cornette
 g = 0.76
 
 # 左侧也是一个可选经验值。
-vec3(2.1e-6)
+vec3(21e-6)
 ```
 
 ## 积分
@@ -59,7 +59,7 @@ S(p) = σs(p)∫S²|p(ω'->ω)L(p',ω')dω'
     ~= σs(p)p(C * e^-∫l2|σt(p')dx')
 
 Lo = Cp ∫l1|dx [e^(-∫0..l1Pasted|σt(p)dx) σs(p)e^-∫l2|σt(p')dx']
-LoRayl + LoMie
+LoRayl + LoMie # 这俩虽然分开算，但将消光的影响合在一起(exp上的值)
 ```
 您需要一个局部坐标系来将光线转入本地计算(例如对齐到Z轴)和计算球交点的工具函数。  
 你可以假设位于地球顶部。地球(6300km)，大气(100KM)。其实我们看见的天空形状是一个很宽广的球切片。  
@@ -82,7 +82,7 @@ vec3 atmosphere( in vec3 ro, in vec3 rd, in vec3 sd, in float C) {
   const float re = 6371e3;
   const float ra = 6471e3;
   const vec3 beta0r = vec3(5.8e-6, 13.5e-6, 33.1e-6);
-  const vec3 beta0m = vec3(2.1e-6);
+  const vec3 beta0m = vec3(4e-6);
   const float hr = 8e3;
   const float hm = 1.2e3;
   const float g = 0.75;
@@ -121,8 +121,8 @@ vec3 atmosphere( in vec3 ro, in vec3 rd, in vec3 sd, in float C) {
       g2m += dy * beta0m * exp(-hy / hm);
     }
 
-    r += dx * (exp(-g1r) * beta0r * exp(-h / hr) * exp(-g2r));
-    m += dx * (exp(-g1m) * beta0m * exp(-h / hm) * exp(-g2m));
+    r += dx * exp(-(g1r + g1m)) * beta0r * exp(-h / hr) * exp(-(g2r + g2m));
+    m += dx * exp(-(g1r + g1m)) * beta0m * exp(-h / hm) * exp(-(g2r + g2m));
   }
 
   return C * pr * r + C * pm * m;
@@ -132,12 +132,15 @@ vec3 atmosphere( in vec3 ro, in vec3 rd, in vec3 sd, in float C) {
 ## 截图
 <div class="x gr txac">
   <div class="x la flex mg0">
-    <div class="x la item6-lg item12 pd0">
+    <div class="x la item4-lg item4 pd0">
       <img src="/assets/i/2-1.png">
     </div>
-    <div class="x la item6-lg item12 pd0">
+    <div class="x la item4-lg item4 pd0">
       <img src="/assets/i/2-2.png">
     </div>
+    <div class="x la item4-lg item4 pd0">
+      <img src="/assets/i/2-3.png">
+    </div>
   </div>
-  <p>图左：位于地面，太阳光方向来自位于视线最远处，图右：位于15KM高度看见的大气。经过伽马矫正。</p>
+  <p>图1：北极地面点的日出(视线Y=1)。图2：正午远处。图三：位于15KM处。经过伽马矫正和色调映射。</p>
 </div>
