@@ -38,11 +38,11 @@ vec3(5.8e-6,13.5e-6,33.1e-6);
 ```ruby
 βs(h,λ) = βs(0,λ)e^(-h/HM)
 
-p(cosθ) = (3/8Π) * (1-g²)(1+cosθ)/(2+g²)(1+g²-2gcosθ)^1.5
+p(cosθ) = (3/8Π) * [(1-g²)(1+cos²θ)]/[(2+g²)(1+g²-2gcosθ)^1.5] #Cornette-Shanks
 g = 0.76
 
 # 左侧也是一个可选经验值。
-vec3(21e-6)
+vec3(2.1e-6)
 ```
 
 ## 积分
@@ -54,27 +54,22 @@ vec3(21e-6)
 # l2 l1采样点沿着太阳方向到大气边缘交点的路径
 Lo = ∫l1|T(p)S(p) dx #(该T沿着视线累积减弱)
 
-T(p) = exp(-∫0..l1Pasted|σt(p)dx) # 不要重复算前面的，所以直接用同一个dx不分积分了
-     =           βs(0)e^(-h/HR)dx
+T(p) = e^(-∫0..l1Pasted|σt(p)dx) # 不要重复算前面的，所以直接用同一个dx不分积分了
 S(p) = σs(p)∫S²|p(ω'->ω)L(p',ω')dω'
-    ~= σs(p)ρ(C * T2(p))
-     = σs(p)ρ(C * ∫l2|σs(p')dx')
+    ~= σs(p)p(C * e^-∫l2|σt(p')dx')
 
-Lo = C * ρ ∫l1|T(p)T2(p)βs(h)dx
-# 另外我们可以合并T，T2到一个exp中，指数相加
-```
-您需要一个局部坐标系来将光线转入本地计算(例如对齐到Z轴)和计算球交点的工具函数。  
-你可以假设位于地球顶部。地球(6300km)，大气(100KM)。其实我们看见的天空形状是一个很长很扁的弓形。  
-朝着水平方向看见比完全垂直高度多得多的空间是很正常的。  
-
-最后结果来自于两种散射贡献的和，可放在同一个循环中同步完成。  
-```ruby
+Lo = Cp ∫l1|dx [e^(-∫0..l1Pasted|σt(p)dx) σs(p)e^-∫l2|σt(p')dx']
 LoRayl + LoMie
 ```
+您需要一个局部坐标系来将光线转入本地计算(例如对齐到Z轴)和计算球交点的工具函数。  
+你可以假设位于地球顶部。地球(6300km)，大气(100KM)。其实我们看见的天空形状是一个很宽广的球切片。  
+朝着水平方向看见比完全垂直高度多得多的空间是很正常的。  
 
 ## 实现
+本文提供的实现仅用于实验和验证目的，出于实用目的，请勿使用本文提供的实现代码。  
 ```cpp
-vec2 iSphere( in vec3 ro, in vec3 rd, in vec3 ce, float ra) {
+// https://iquilezles.org/articles/intersectors/
+vec2 sphIntersect( in vec3 ro, in vec3 rd, in vec3 ce, float ra) {
   vec3 oc = ro - ce;
   float b = dot(oc, rd);
   float c = dot(oc, oc) - ra * ra;
@@ -83,83 +78,66 @@ vec2 iSphere( in vec3 ro, in vec3 rd, in vec3 ce, float ra) {
   h = sqrt(h);
   return vec2(-b - h, -b + h);
 }
-vec3 atmosphere( in vec3 ro, in vec3 rd) {
-  const float sunbase = 15.0; // sunbase
-  const float re = 6371e3; // unit: meter
-  const float ra = 6471e3; // unit: meter
-  const vec3 Rbeta0 = vec3(5.8e-6, 13.5e-6, 33.1e-6); // unit: /m
-  const vec3 Mbeta0 = vec3(21e-6);
+vec3 atmosphere( in vec3 ro, in vec3 rd, in vec3 sd, in float C) {
+  const float re = 6371e3;
+  const float ra = 6471e3;
+  const vec3 beta0r = vec3(5.8e-6, 13.5e-6, 33.1e-6);
+  const vec3 beta0m = vec3(2.1e-6);
   const float hr = 8e3;
   const float hm = 1.2e3;
-  const float g = 0.76;
+  const float g = 0.75;
 
-  // 将输入位置参考到地球中心的位系中，地面处为半径高，任何ro的大气高度为ro - re
-  ro += vec3(0.0, re, 0.0);
-  float t = iSphere(ro, rd, vec3(0.0), ra).y; // ro -> t
+  float costheta = dot(rd, sd);
+  float pr = 0.0597 * (1.0 + costheta * costheta);
+  float pm = 0.1194 * (1.0 - g * g) * (1.0 + costheta * costheta) /
+    ((2.0 + g * g) * pow(1.0 + g * g - 2.0 * g * costheta, 1.5));
 
-  // 求解方程分解为固定段的积分
-  float segement = 16.0;
-  float dx = t / segement;
+  ro += vec3(0.0, 0.0, re);
 
-  // 计算常数
-  vec3 sd = sun_rd; //??
-  float cos_theta = dot(rd, sd);
-  float Rphase = 0.0597 * (1.0 + cos_theta * cos_theta);
-  float Mphase = 0.1194 * (1.0 - g * g) * (1.0 + cos_theta * cos_theta) /
-    ((2.0 + g * g) * pow(1.0 + g * g - 2.0 * g * cos_theta, 1.5));
+  float x = 16.0;
+  float y = 8.0;
+  float tx = sphIntersect(ro, rd, vec3(0.0), ra).y;
+  if (tx < 0.0) return vec3(.0);
+  float dx = tx / x;
 
-  vec3 R = vec3(0.0), M = vec3(0.0); // 重复mie
-  float R_tmp = 0.0, M_tmp = 0.0; // 重复mie
+  vec3 g1r = vec3(0.), g1m = vec3(0.);
+  vec3 r = vec3(.0), m = vec3(.0);
+  for (float i = 0.; i < x; i += 1.) {
+    vec3 px = ro + rd * i * dx;
+    float h = length(px) - re;
+    if (h < 0.) return vec3(.0);
 
-  for (int i = 1; i <= int(segement); i++) {
-    float h = length(ro) - re;
-    // 只要光线割到地球就被大地遮挡，而这相当于length(ro) < re
-    if (h < 0.0) return vec3(0.0);
+    g1r += dx * beta0r * exp(-h / hr);
+    g1m += dx * beta0m * exp(-h / hm);
 
-    // 优化1：存储消光量的衰减部分，减少exp调用
-    float Re = exp(-h / hr), Me = exp(-h / hm);
-    R_tmp += Re * dx;
-    M_tmp += Me * dx; // 重复mie
+    float ty = sphIntersect(px, sd, vec3(0.0), ra).y;
+    float dy = ty / y;
+    vec3 g2r = vec3(0.), g2m = vec3(0.);
+    for (float j = 0.; j < y; j += 1.) {
+      vec3 py = px + sd * j * dy;
+      float hy = length(py) - re;
 
-    // 计算T2(发射sd)
-    float segement2 = 8.0;
-    vec3 ro2 = ro;
-    float t2 = iSphere(ro2, sd, vec3(0.0), ra).y;
-    float dx2 = t2 / segement2;
-    float R_tmp2, M_tmp2 = 0.0; // 重复mie
-    for (int j = 1; j <= int(segement2); j++) {
-      float h2 = length(ro2) - re;
-      // 考虑太阳在背面是有可能割到并遮挡的，但这样会失去漂亮的黄昏
-      // if (h2 < 0.0) return vec3(0.0);
-
-      R_tmp2 += exp(-h2 / hr) * dx2;
-      M_tmp2 += exp(-h2 / hm) * dx2; // 重复mie
-
-      ro2 += sd * dx2;
+      g2r += dy * beta0r * exp(-hy / hr);
+      g2m += dy * beta0m * exp(-hy / hm);
     }
 
-    vec3 RTT2 = exp(-Rbeta0 * (R_tmp + R_tmp2));
-    vec3 MTT2 = exp(-Mbeta0 * (M_tmp + M_tmp2) * 1.1); // 重复mie 消光 S*1.1
-
-    // 累积到结果，注意R只是积分项。优化2：并且我们将Rbeta0 * Re的常数部分移动到外面
-    R += RTT2 * Re * dx;
-    M += MTT2 * Me * dx;
-
-    // 之后再移动
-    ro += rd * dx;
+    r += dx * (exp(-g1r) * beta0r * exp(-h / hr) * exp(-g2r));
+    m += dx * (exp(-g1m) * beta0m * exp(-h / hm) * exp(-g2m));
   }
-  return sunbase * (Rphase * R * Rbeta0 + Mphase * M * Mbeta0); // 建议在外部输出时clamp
-  return sunbase * Mphase * M * Mbeta0;
-  return sunbase * Rphase * R * Rbeta0;
+
+  return C * pr * r + C * pm * m;
 }
 ```
 
 ## 截图
 <div class="x gr txac">
   <div class="x la flex mg0">
-    <div class="x la item5-lg item12 pd0">
-      <img src="/assets/i/6-1.png">
+    <div class="x la item6-lg item12 pd0">
+      <img src="/assets/i/2-1.png">
+    </div>
+    <div class="x la item6-lg item12 pd0">
+      <img src="/assets/i/2-2.png">
     </div>
   </div>
-  <p>图1：地平线：雷利+米氏散射</p>
+  <p>图左：位于地面，太阳光方向来自位于视线最远处，图右：位于15KM高度看见的大气。经过伽马矫正。</p>
 </div>
