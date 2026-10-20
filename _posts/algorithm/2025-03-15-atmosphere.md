@@ -54,15 +54,15 @@ vec3(21e-6)
 # l2 l1采样点沿着太阳方向到大气边缘交点的路径
 Lo = ∫l1|T(p)S(p) dx #(该T沿着视线累积减弱)
 
-T(p) = e^(-∫0..l1Pasted|σt(p)dx) # 不要重复算前面的，所以直接用同一个dx不分积分了
-S(p) = σs(p)∫S²|p(ω'->ω)L(p',ω')dω'
-    ~= σs(p)p(C * e^-∫l2|σt(p')dx')
+T(p) = e^(-∫0..l1Pasted|σt(p)dx)    # 简化不重新采样，第一个点为100%
+S(p) = σs(p)∫S²|p(ω'->ω)L(p,ω')dω'
+    ~= σs(p)p(C * e^-∫l2|σt(p')dx') # 由于是定值平行光，视线角度和光线角度不变
 
-Lo = Cp ∫l1|dx [e^(-∫0..l1Pasted|σt(p)dx) σs(p)e^-∫l2|σt(p')dx']
+Lo = Cp ∫l1|dx [透射率 * σs(p) * e^-∫l2|σt(p')dx']
 LoRayl + LoMie # 这俩虽然分开算，但将消光的影响合在一起(exp上的值)
 ```
 您需要一个局部坐标系来将光线转入本地计算(例如对齐到Z轴)和计算球交点的工具函数。  
-你可以假设位于地球顶部。地球(6300km)，大气(100KM)。其实我们看见的天空形状是一个很宽广的球切片。  
+并假设位于地球北极点发射。地球(6300km)，大气(100KM)。其实我们看见的天空形状是一个很宽广的球切片。  
 朝着水平方向看见比完全垂直高度多得多的空间是很正常的。  
 
 ## 实现
@@ -100,29 +100,27 @@ vec3 atmosphere( in vec3 ro, in vec3 rd, in vec3 sd, in float C) {
   if (tx < 0.0) return vec3(.0);
   float dx = tx / x;
 
-  vec3 g1r = vec3(0.), g1m = vec3(0.);
   vec3 r = vec3(.0), m = vec3(.0);
+  vec3 g1 = vec3(0.);
   for (float i = 0.; i < x; i += 1.) {
     vec3 px = ro + rd * i * dx;
     float h = length(px) - re;
     if (h < 0.) return vec3(.0);
 
-    g1r += dx * beta0r * exp(-h / hr);
-    g1m += dx * beta0m * exp(-h / hm);
-
     float ty = sphIntersect(px, sd, vec3(0.0), ra).y;
     float dy = ty / y;
-    vec3 g2r = vec3(0.), g2m = vec3(0.);
+    vec3 g2 = vec3(0.);
     for (float j = 0.; j < y; j += 1.) {
       vec3 py = px + sd * j * dy;
       float hy = length(py) - re;
 
-      g2r += dy * beta0r * exp(-hy / hr);
-      g2m += dy * beta0m * exp(-hy / hm);
+      g2 += dy * (beta0r * exp(-hy / hr) + beta0m * exp(-hy / hm));
     }
 
-    r += dx * exp(-(g1r + g1m)) * beta0r * exp(-h / hr) * exp(-(g2r + g2m));
-    m += dx * exp(-(g1r + g1m)) * beta0m * exp(-h / hm) * exp(-(g2r + g2m));
+    r += dx * exp(-g1) * beta0r * exp(-h / hr) * exp(-g2);
+    m += dx * exp(-g1) * beta0m * exp(-h / hm) * exp(-g2);
+
+    g1 += dx * (beta0r * exp(-h / hr) + beta0m * exp(-h / hm));
   }
 
   return C * pr * r + C * pm * m;
