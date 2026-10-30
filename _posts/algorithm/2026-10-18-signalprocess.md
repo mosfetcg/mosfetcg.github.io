@@ -41,7 +41,7 @@ b称为滤波器，有多种用途，例如全分配一个归一均值常数，�
 <div class="x gr txac">
   <div class="x la flex mg0">
     <div class="x la item4-lg item4 pd0">
-      <img src="/assets/i/rd-03.png">
+      <img src="/assets/m/rd-04.png">
     </div>
   </div>
 </div>
@@ -55,7 +55,7 @@ b称为滤波器，有多种用途，例如全分配一个归一均值常数，�
 <div class="x gr txac">
   <div class="x la flex mg0">
     <div class="x la item4-lg item4 pd0">
-      <img src="/assets/i/rd-04.png">
+      <img src="/assets/m/rd-05.png">
     </div>
   </div>
 </div>
