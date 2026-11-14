@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page.title }}</title>
+    <link rel="stylesheet" href="/assets/xapi/reset.css">
+    <link rel="stylesheet" href="/assets/xapi/font.css">
+    <link rel="stylesheet" href="/assets/xapi/x.min.css">
+    <link rel="stylesheet" href="/assets/xapi/autumn.css">
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+    {% if page.include_abcjs %}
+    <script src="https://cdn.jsdelivr.net/npm/abcjs@6.7.2/dist/abcjs-basic-min.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/abcjs@6.7.2/abcjs-audio.min.css" rel="stylesheet">
+    {% endif %}
+    <style>
+    pre.highlight {
+        display: block;
+        font-size: 0.98rem;
+        border-width: 0.125rem;
+        border-left: 0.2rem solid;
+        border-color: #fff9;
+        padding: 0.25rem !important;
+        background: #fff5;
+    }
+
+    code:not(.highlight code) {
+        word-break: break-word;
+        /* markdown */
+        padding: 0;
+        padding-top: 0.2em;
+        padding-bottom: 0.2em;
+        margin: 0;
+        font-size: 85%;
+        border-radius: 3px;
+        text-decoration: underline;
+    }
+
+    .abcjs-inline-audio {
+        background: #fff;
+        fill: currentColor !important;
+    }
+
+    .abcjs-btn g {
+        fill: #000;
+        stroke: #000;
+    }
+
+    .abcjs-inline-audio .abcjs-btn:hover g {
+        fill: #111;
+        stroke: #111;
+    }
+
+    .abcjs-highlight {
+        fill: red !important;
+    }
+
+    table {
+        margin: 10px;
+    }
+    </style>
+</head>
+
+<body class="full-pager x la hmin100v mg0 pdt5-lg sk bg-gunmetal09">
+    <section class="full-centered x la con-md pdt2 pd0 txb posi-rel" style="background: #eeeedd">
+        <div class="page-header x sk">
+            <h1 class="x-grad x la mgb0 mgb2-md sk tx-main1">#{{ page.title }}</h1>
+            <p class="x la mgb0 mgb2-md"><span class="x gr fw7">{{ page.date | date: "%y年%m月%d日" }}</span> <span class="x ">作者{{ page.author }}</span></p>
+            <div class="x la bd1-lg"></div>
+        </div>
+        <div class="page-content x la pdx2 pdy3">
+            {{ content }}
+        </div>
+        <div class="page-nav-placer x la posi-abs x-coord2 dsplb-md dspln">
+            {% include page_nav.html addtion_class="x gr txar" %}
+        </div>
+        <div class="page-nav-placer2 x la posi-fix x-coord3">
+            {% include page_nav.html addtion_class="x gr txar x la flex mgr2 fxdc fxdr-md" %}
+        </div>
+        {% include events.html %}
+    </section>
+</body>
+
+</html>

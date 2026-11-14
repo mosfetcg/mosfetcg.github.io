@@ -10,6 +10,10 @@
     <link rel="stylesheet" href="/assets/xapi/x.min.css">
     <link rel="stylesheet" href="/assets/xapi/autumn.css">
     <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+    {% if page.include_abcjs %}
+    <script src="https://cdn.jsdelivr.net/npm/abcjs@6.7.2/dist/abcjs-basic-min.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/abcjs@6.7.2/abcjs-audio.min.css" rel="stylesheet">
+    {% endif %}
 </head>
 
 <body class="full-pager x la hmin100v mg0 pdt5-lg sk bgb">

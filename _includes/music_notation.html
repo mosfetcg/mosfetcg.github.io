@@ -1,0 +1,124 @@
+<div class="music-notations x la mgy2 sk bgw50 txb x-noselect">
+    {% assign staff = include.staff %}
+    {% assign notes = nil %}
+    {% if staff == "course1" %}
+    {% assign notes = "
+    X: 1
+    T:
+    C:
+    M: 4/4
+    L: 1/8
+    Q: 1/4=120
+    %%score {1 2}
+    V: 1 clef=treble
+    V: 2 clef=bass
+    K: C
+    [V: 1] C2 D2 E2 F2 | GG AA BB cc |
+    [V: 2] C,2 D,2 E,2 F,2 | G,G, A,A, B,B, CC |
+    " %}
+    {% elsif staff == "course2" %}
+    {% assign notes = "
+    X: 1
+    T:
+    C:
+    M: 4/4
+    L: 1/4
+    Q: 1/4=120
+    K: C
+    [CC] [CD] [CE] [CF] | [CG] [CA] [CB] [Cc]
+    " %}
+    {% elsif staff == "course3" %}
+    {% assign notes = "
+    X: 1
+    T:
+    C:
+    M: 4/4
+    L: 1/4
+    Q: 1/4=120
+    K: C
+    G G G G | G2 G2 | G4
+    w: 1 2 3 4 12 34 1234
+    w: 哒 哒 哒 哒 哒— 哒— 哒———
+    " %}
+    {% elsif staff == "course4" %}
+    {% assign notes = "
+    X: 1
+    T:
+    C:
+    M: 4/4
+    L: 1/8
+    Q: 1/4=60
+    K: C
+    GG GG GG GG
+    w: 1 + 2 + 3 + 4 +
+    " %}
+    {% endif %}
+    <!--  -->
+    {% if notes %}
+    <div id="staff-{{ staff }}" data-abc='{{ notes | escape }}'></div>
+    <div id="audio-{{ staff }}" class="x la" style="width: 50px;">
+        <span class="message">{{ include.msg }}</span>
+    </div>
+    <script>
+    (function() {
+      const staffEl = document.getElementById("staff-{{ staff }}");
+      const abcString = staffEl.getAttribute("data-abc").replace(/\\n/g, "\n")
+        .replace(/^[ \t]+/gm, "");
+
+      const visualObj = ABCJS.renderAbc(staffEl, abcString)[0];
+
+      // 1. 定义针对当前乐谱实例的 CursorControl（联动控制器）
+      function CursorControl(rootEl) {
+        this.rootEl = rootEl;
+
+        // 清除当前乐谱内的所有高亮
+        this.clearHighlight = function() {
+          const lastSelection = this.rootEl.querySelectorAll(".abcjs-highlight");
+          for (let i = 0; i < lastSelection.length; i++) {
+            lastSelection[i].classList.remove("abcjs-highlight");
+          }
+        };
+
+        this.onStart = function() {
+          this.clearHighlight();
+        };
+
+        this.onEvent = function(ev) {
+          this.clearHighlight();
+          if (ev && ev.elements) {
+            for (let i = 0; i < ev.elements.length; i++) {
+              const note = ev.elements[i];
+              for (let j = 0; j < note.length; j++) {
+                note[j].classList.add("abcjs-highlight");
+              }
+            }
+          }
+        };
+
+        this.onFinished = function() {
+          this.clearHighlight();
+        };
+      }
+
+      if (ABCJS.synth.supportsAudio()) {
+        const synthControl = new ABCJS.synth.SynthController();
+        // 2. 实例化控制器并传入 synthControl.load 的第二个参数（替换原来的 null）
+        const cursorControl = new CursorControl(staffEl);
+
+        synthControl.load("#audio-{{ staff }}", cursorControl, {
+          displayPlay: true,
+          displayProgress: false,
+          displayWarp: false
+        });
+
+        const createSynth = new ABCJS.synth.CreateSynth();
+        createSynth.init({ visualObj: visualObj }).then(() => {
+          synthControl.setTune(visualObj, false);
+        }).catch((err) => {
+          console.warn("音频加载失败:", err);
+        });
+      }
+    })();
+    </script>
+    {% endif %}
+</div>
