@@ -3,24 +3,13 @@ layout: page
 title:  "乐理2"
 author: mosfet
 category: music
-tags: 音乐
+tags: hidden 音乐
 ---
 
 ### 对位(Counterpoint)
 对位法是一种传统的作曲教学方法，创作多条旋律线(多个发声声部voices)彼此独立进行并保持和谐，  
 在横向（单旋律自身）和纵向（多旋律和声）两个层面思考音乐。  
 
-和谐音符以及不和谐音符(Consonance and Dissonance)  
-```
-Melodically       no
-所有P1458       所有增减
-大小ma/mi236    大小ma/mi7
-
-Harmonically
-ma/mi36        ma/mi27
-P185           所有增减
-               P4
-```
 在对位法中，和谐的含义进一步区分。P158称为完全和谐，大小36是不完全和谐的，所有27增减都是不和谐的。  
 P4出现在最低声部时，它是不和谐的；而当它出现在两个较高声部之间时，它是。  
 如果在对位中仅考虑两个声部，且P4涉及低声部，那么将不会是和谐的。  
