@@ -57,17 +57,27 @@
     }
 
     table {
-        margin: 10px;
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        border-collapse: collapse;
+        margin: 10px 0px;
+    }
+
+    .staff-container {
+        overflow-x: auto !important;
     }
     </style>
 </head>
 
 <body class="full-pager x la hmin100v mg0 pdt5-lg sk bg-gunmetal09">
     <section class="full-centered x la con-md pdt2 pd0 txb posi-rel" style="background: #eeeedd">
-        <div class="page-header x sk">
+        <div class="page-header x sk la pdx2">
             <h1 class="x-grad x la mgb0 mgb2-md sk tx-main1">#{{ page.title }}</h1>
-            <p class="x la mgb0 mgb2-md"><span class="x gr fw7">{{ page.date | date: "%y年%m月%d日" }}</span> <span class="x ">作者{{ page.author }}</span></p>
-            <div class="x la bd1-lg"></div>
+            <p class="x la mgb0 mgb2"><span class="x gr fw7">{{ page.date | date: "%y年%m月%d日" }}</span> <span class="x ">作者{{ page.author }}</span></p>
+            <div class="x la bd1"></div>
         </div>
         <div class="page-content x la pdx2 pdy3">
             {{ content }}

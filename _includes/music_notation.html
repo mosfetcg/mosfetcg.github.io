@@ -55,7 +55,7 @@
     {% elsif staff == "course5" %}
     {% assign notes = "
     X: 1
-    T: 6级与7级音色彩对比
+    T: C大小调6级与7级音色彩对比
     M: 4/4
     L: 1/4
     Q: 1/4=100
@@ -96,10 +96,40 @@
     [V: 1] e2 a2 | g2 ag | ff ed | e2 A2 | z f de | c3 A | BE cB | A4 |]
     [V: 2] A,,2 [E,2A,2] | A,,2 [E,2A,2] | D,2 [F,2A,2] | A,,2 [E,2A,2] | D,2 [F,2A,2] | A,,2 [E,2A,2] | E,,2 [E,2^G,2] | A,,2 [E,2A,2] |]
     " %}
+    {% elsif staff == "course6" %}
+    {% assign notes = '
+    X: 1
+    T: 四种三和弦色彩对比
+    M: 4/4
+    L: 1/4
+    Q: 1/4=100
+    K: C
+    "^F"[FAc]4 | "^Fm"[F_Ac]4 | "^Fdim"[F_A_c]4 | "^Faug"[FA^c]4 |]
+    ' %}
+    {% elsif staff == "course7" %}
+    {% assign notes = '
+    X: 1
+    T:
+    M: 4/4
+    L: 1/1
+    Q: 1/1=150
+    K: C
+    "^I (C)"[CEG] | "^ii (Dm)"[DFA] | "^iii (Em)"[EGB] | "^IV (F)"[FAc] | "^V (G)"[GBd] | "^vi (Am)"[Ace] | "^vii° (Bdim)"[Bdf] | "^I (C)"[ceg] |]
+    ' %}
+    {% elsif staff == "course8" %}
+    {% assign notes = '
+    X: 1
+    T:
+    M: 4/4
+    L: 1/1
+    Q: 1/1=100
+    K: C clef=bass
+    D, | [D,F,A,] | [D,^F,A,]
+    ' %}
     {% endif %}
     <!--  -->
     {% if notes %}
-    <div id="staff-{{ staff }}" data-abc='{{ notes | escape }}'></div>
+    <div id="staff-{{ staff }}" data-abc='{{ notes | escape }}' class="staff-container"></div>
     <div id="audio-{{ staff }}" class="x la" style="width: 50px;">
         <span class="message">{{ include.msg }}</span>
     </div>
