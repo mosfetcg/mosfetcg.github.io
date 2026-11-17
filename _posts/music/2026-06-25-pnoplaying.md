@@ -3,7 +3,7 @@ layout: music_variant
 title:  "键盘乐器演奏"
 author: mosfet
 category: music
-tags: hidden 音乐
+tags: 乐器
 ---
 
 ```ruby
