@@ -1,9 +1,9 @@
 ---
-layout: page
-title:  "乐器等"
+layout: music_variant
+title:  "键盘乐器演奏"
 author: mosfet
 category: music
-tags: 音乐
+tags: hidden 音乐
 ---
 
 ```ruby
