@@ -109,6 +109,54 @@
     K: C clef=bass
     D, | [D,F,A,] | [D,^F,A,]
     ' %}
+    {% elsif staff == "pno1" %}
+    {% assign notes = '
+    X: 1
+    T: step1
+    M: 4/4
+    L: 1/4
+    Q: 1/4=100
+    K: F
+    !1!C | F> F F A | G> F G A | F> F A c | d3 z
+    w: count: | 4 1 1 3 | 2 2 2 2 | 3 1 3 3 | 2
+    ' %}
+    {% elsif staff == "pno2" %}
+    {% assign notes = '
+    X: 1
+    T: step2
+    M: 4/4
+    L: 1/4
+    Q: 1/4=100
+    K: F
+    !1!C | "^?"F> F F A | G> F G A | F> F A c | d3 z
+    w: 停 | 转动4音程使用什么F？ _ _ _ | _ _ _ _ | _ _ _ _ | _
+    ' %}
+    {% elsif staff == "pno3" %}
+    {% assign notes = '
+    X: 1
+    T: step3
+    M: 4/4
+    L: 1/4
+    Q: 1/4=100
+    K: F
+    !1!C | !2!F> F F A | G> F G A | !1!F> F !2!A !4!c | d3 z
+    w: F1=C | _ _ _ _ | _ _ _ _ | _ _ _ _ | _
+    ' %}
+    {% elsif staff == "pno4" %}
+    {% assign notes = '
+    X: 1
+    T: Auld Lang Syne
+    M: 4/4
+    L: 1/4
+    Q: 1/4=100
+    %%score {1 2}
+    V: 1 clef=treble
+    V: 2 clef=bass
+    K: F
+    [V: 1]!1!C | !2!F> F F A | G> F G A | !1!F> F !2!A !4!c | d3 z
+    [V: 2]z | "^Ⅰ"[F,A,C]4 | "^V7"[E,B,C]4 | "^Ⅰ"[F,A,C]2 F, A, | "^Ⅳ"[F,B,D]2 z
+    w: _ _ _ _ | _ _ _ _ | _ _ _ _ | _ _ _ _ | _
+    ' %}
     {% endif %}
     <!--  -->
     {% if notes %}
