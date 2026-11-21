@@ -38,7 +38,6 @@
     K: C
     G G G G | G2 G2 | G4
     w: 1 2 3 4 12 34 1234
-    w: 哒 哒 哒 哒 哒— 哒— 哒———
     " %}
     {% elsif staff == "course4" %}
     {% assign notes = "
@@ -163,14 +162,21 @@
     T:
     M: 4/4
     L: 1/8
-    Q: 1/4=100
+    Q: 1/4=45
     K: C
-    c2 c2 c2 c2 | cc cc cc cc | c/2c/2c/2c/2 c/2c/2c/2c/2 c/2c/2c/2c/2 c/2c/2c/2c/2 |
-    w: 1 2 _ _ | _ _ _ _ | _ _ _ _ |
-    c8 | c3 c z2 z2 | c c3 z2 z2 |
-    w: 4拍 | 1.5拍 半拍 _ _ | _ _ _ _ |
-    cc/2c/2 z2 z2 z2 | c/2c/2c z2 z2 z2
-    w: 一拍(半拍+0.25\*2) _ _ _ | 一拍(0.25\*2+半拍) _ _ _
+    z2 z2 z2 z2 | c2 c2 c2 c2 | cc cc cc cc | c/2c/2c/2c/2 c/2c/2c/2c/2 c/2c/2c/2c/2 c/2c/2c/2c/2 |
+    ' %}
+    {% elsif staff == "poprhythm2" %}
+    {% assign notes = '
+    X: 1
+    T:
+    M: 4/4
+    L: 1/8
+    Q: 1/4=67
+    K: C
+    c2 cc c/2c/2c/2c/2 z2 |
+    c3 c c3 c | c c3 c c3 | c3/2c/2 c3/2c/2 c3/2c/2 c3/2c/2 | c/2c3/2 c/2c3/2 c/2c3/2 c/2c3/2 |
+    cc/2c/2 cc/2c/2 cc/2c/2 cc/2c/2 | c/2c/2c c/2c/2c c/2c/2c c/2c/2c | c/2cc/2 c/2cc/2 c/2cc/2 c/2cc/2 |
     ' %}
     {% endif %}
     <!--  -->
