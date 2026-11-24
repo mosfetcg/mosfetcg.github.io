@@ -1,5 +1,8 @@
 <div class="music-notations x la mgy2 sk bgw50 txb x-noselect">
     {% assign staff = include.staff %}
+    {% if include.notes %}
+    {% assign notes = include.notes %}
+    {% else %}
     {% assign notes = nil %}
     {% if staff == "course1" %}
     {% assign notes = "
@@ -178,6 +181,7 @@
     c3 c c3 c | c c3 c c3 | c3/2c/2 c3/2c/2 c3/2c/2 c3/2c/2 | c/2c3/2 c/2c3/2 c/2c3/2 c/2c3/2 |
     cc/2c/2 cc/2c/2 cc/2c/2 cc/2c/2 | c/2c/2c c/2c/2c c/2c/2c c/2c/2c | c/2cc/2 c/2cc/2 c/2cc/2 c/2cc/2 |
     ' %}
+    {% endif %}
     {% endif %}
     <!--  -->
     {% if notes %}
